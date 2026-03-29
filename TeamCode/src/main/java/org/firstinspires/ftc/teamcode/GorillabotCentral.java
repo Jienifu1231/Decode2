@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 //import org.firstinspires.ftc.teamcode.Components.color;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.Angle;
+import org.firstinspires.ftc.teamcode.Components.Colors;
 import org.firstinspires.ftc.teamcode.Components.Gate;
 import org.firstinspires.ftc.teamcode.Components.Lift;
 import org.firstinspires.ftc.teamcode.Components.Outtake;
@@ -23,10 +24,6 @@ import org.firstinspires.ftc.teamcode.util.Convolution;
 import org.firstinspires.ftc.teamcode.Components.Intake;
 import org.firstinspires.ftc.teamcode.util.controller.Controller;
 import org.firstinspires.ftc.teamcode.util.Pose2d;
-//import org.firstinspires.ftc.teamcode.Components.Spindex;
-//import org.firstinspires.ftc.teamcode.Components.Outtake;
-//import org.firstinspires.ftc.teamcode.Components.color;
-//import org.firstinspires.ftc.teamcode.Components.Intake;
 
 
 public abstract class GorillabotCentral extends LinearOpMode {
@@ -37,6 +34,8 @@ public abstract class GorillabotCentral extends LinearOpMode {
 
     public Limelight3A limelight;
     public LLResult limeResult;
+
+    public Colors colors;
 
     public org.firstinspires.ftc.teamcode.Components.Intake Intake;
     public org.firstinspires.ftc.teamcode.Components.Outtake Outtake;
@@ -82,6 +81,9 @@ public abstract class GorillabotCentral extends LinearOpMode {
 
         timer = new ElapsedTime();
         //change the component base the actual robot later on
+
+        colors = new Colors();
+        colors.init(hardwareMap);
 
 
 

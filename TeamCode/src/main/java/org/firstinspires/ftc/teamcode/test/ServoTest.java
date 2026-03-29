@@ -35,8 +35,8 @@ public class ServoTest extends GorillabotCentral {
             }
 
            //Gate.manual(pos);
-            //Lift.manual(pos);
-            Angle.manual(pos);
+            Lift.manual(pos);
+            //Angle.manual(pos);
 
                updateComponents();
 

@@ -13,7 +13,11 @@ public class PIDF {
     public double max;
     public boolean angleMode;
 
+    public double tuneVoltage = 12.301;//change
+    public double voltageRatio;
     public double kV;
+    public double weight = 0.9;
+
 
     public PIDF(double kP, double kI, double kD, double kV, double sensitivity, double integral_sum_limit, double norm_vel, double max, boolean angleMode){
         //PID tuning constants
@@ -43,7 +47,7 @@ public class PIDF {
 
     //extent to which you smooth out the change in error by weighing the previously calculated
     //change with the current calculated change
-    private final double weight = 0.1;
+    private final double weightVolt = 0.1;
 
     //variables for storing previous values, i.e. to calculate change
     private double last_error = 0.0;
@@ -78,7 +82,7 @@ public class PIDF {
     }
 
     //function to perform calculation in a loop; inputs desired target and current position
-    public double update(double target, double pos){
+    public double update(double target, double pos, double curvolt){
 
         double currTime = System.nanoTime();
         double time_elapsed = (currTime - last_time)/1.0E9;
@@ -127,9 +131,12 @@ public class PIDF {
         // ensure the integral sum cannot exceed the limit
         integral_sum = Range.clip(this.integral_sum, -this.integral_sum_limit, this.integral_sum_limit);
 
+        if (curvolt < 1e-6) curvolt = tuneVoltage;
 
-        double feedforward = kV * target;
-//*     Math.signum(error)
+// Scale feedforward based on voltage difference
+        voltageRatio = tuneVoltage/curvolt;
+
+        double feedforward = kV * target * voltageRatio;
 
 
         //calculate the output using weighted p, i and d

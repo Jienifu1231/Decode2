@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.util.PID;
 import org.firstinspires.ftc.teamcode.util.PIDF;
@@ -18,8 +19,9 @@ public class Outtake {
         WAITING,
         LAUNCH_CLOSE,
         LAUNCH_FAR,
-        LAUNCH_TELE,
-        LAUNCH_BANG
+        LAUNCH_FAR_AUTO,
+        BANG_PID,
+        MANUAL
     }
 
     public State target_state, last_state;
@@ -32,14 +34,20 @@ public class Outtake {
     public boolean state_reached = true;
     public double vel =0;
     public double curvel = 0;
+    public boolean bangbang = false;
+    public boolean pid_active = false;
+
+    public double manual_vel;
 
     public DcMotorEx LflyWheel;
     public DcMotorEx RflyWheel;
+    public VoltageSensor voltageSensor;
+    public double voltage;
 
     public static double kP = 0.00001;//0.000009
     public static double kI = 0;//0.1
     public static double kD = 0;//0.00007
-    public static double kV = 0.000355;//0.000389
+    public static double kV = 0.00034;//0.00034
     public static double sensitivity = 10;
     public static double integral_sum_limit = 10;
     public static double norm_vel = 1000;
@@ -48,20 +56,24 @@ public class Outtake {
 
 
     public static double far_kP = 0.000014;//0.000006'
-    public static double far_kI = 0.003;
+    public static double far_kI = 0.03;
     public static double far_kD = 0;
-    public static double far_kV = 0.00034;//0.00039
+    public static double far_kV = 0.00035;//0.00038
     //tune kV first and make sure it doesnt collide with max speed
+
+    public static double far_auto_kV = 0.000335;//0.00034
+
     public static double far_sensitivity = 0;
     public static double far_integral_sum_limit = 0;
     public static double far_norm_vel = 0.9;
     public static double far_max_speed = 1;
 
-    public PIDF close_pid, far_pid;
+    public PIDF close_pid, far_pid, far_auto_pid;
     //switched to PIDF method instead of just PID
 
 
-    public Outtake(HardwareMap hardwareMap) {LflyWheel = hardwareMap.get(DcMotorEx.class,"lfw");
+    public Outtake(HardwareMap hardwareMap) {
+        LflyWheel = hardwareMap.get(DcMotorEx.class,"lfw");
        LflyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
        LflyWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
        LflyWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -73,13 +85,14 @@ public class Outtake {
        RflyWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
        //RflyWheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         target_state = State.WAITING;
         last_state = State.WAITING;
 
         close_pid = new PIDF(kP, kI, kD, kV, sensitivity, integral_sum_limit, norm_vel, max_speed, false);
         far_pid = new PIDF(far_kP, far_kI, far_kD, far_kV, far_sensitivity, far_integral_sum_limit, far_norm_vel, far_max_speed, false);
-
+        far_auto_pid = new PIDF(far_kP, far_kI, far_kD, far_auto_kV, far_sensitivity, far_integral_sum_limit, far_norm_vel, far_max_speed, false);
     }
 
 
@@ -92,8 +105,10 @@ public class Outtake {
     }
 
     public void launch_far(){target_state = State.LAUNCH_FAR;}
-    public void launch_tele(){target_state = State.LAUNCH_TELE;}
-    public void launch_bang(){target_state = State.LAUNCH_BANG;}
+    public void launch_far_auto(){target_state = State.LAUNCH_FAR_AUTO;}
+    public void bang_pid(){target_state = State.BANG_PID;}
+
+    public void manual(double vel){target_state = State.MANUAL; manual_vel = vel; }
 
 
     public void update() {
@@ -115,10 +130,14 @@ public class Outtake {
 
             case LAUNCH_CLOSE:
                 vel = 1600;//change this based on calculation
+                voltage = voltageSensor.getVoltage();
+
                 curvel = RflyWheel.getVelocity();
-                power = close_pid.update(vel, curvel);
+                power = close_pid.update(vel, curvel, voltage);
                RflyWheel.setPower(power);
                 LflyWheel.setPower(power);
+
+
                 //PID applied -- Test this
 
                 //RflyWheel.setVelocity(vel);
@@ -130,33 +149,64 @@ public class Outtake {
 
             case LAUNCH_FAR:
                 // launch_angle = close_angle;
-                vel = 1900;//1000
+                vel = 1800;//1000
                 curvel = RflyWheel.getVelocity();
-                power = far_pid.update(vel, curvel);//experiment
+                voltage = voltageSensor.getVoltage();
+
+                power = far_pid.update(vel, curvel, voltage);//experiment
                RflyWheel.setPower(power);
                LflyWheel.setPower(power);
+
+               voltage = voltageSensor.getVoltage();
 
                // RflyWheel.setVelocity(vel);
                 //LflyWheel.setVelocity(vel);
 
                 break;
-            case LAUNCH_BANG:
-                vel = 1900;//1000
+
+            case LAUNCH_FAR_AUTO:
+                // launch_angle = close_angle;
+                vel = 1800;//1000
                 curvel = RflyWheel.getVelocity();
-                power = far_pid.update(vel, curvel);//experiment
-                if(curvel <= vel){
-                    power = 1;
+                voltage = voltageSensor.getVoltage();
+
+                power = far_auto_pid.update(vel, curvel, voltage);//experiment
+                RflyWheel.setPower(power);
+                LflyWheel.setPower(power);
+
+                voltage = voltageSensor.getVoltage();
+
+                // RflyWheel.setVelocity(vel);
+                //LflyWheel.setVelocity(vel);
+
+                break;
+
+            case BANG_PID:
+                vel = 1500; //later use a linear regression to model based on where we are on the field
+                voltage = voltageSensor.getVoltage();
+
+                curvel = RflyWheel.getVelocity();
+                if(curvel <= (vel-200) || curvel >= (vel + 200)){
+                    bangbang = true;
+                    if(curvel <= (vel -200)){
+                        power = 1;
+                    }
+                    if(curvel >= (vel +200)){
+                        power = 0;
+                    }
+                }else{
+                    power = far_pid.update(vel, curvel, voltage);
+                    pid_active = true;
                 }
+
                 RflyWheel.setPower(power);
                 LflyWheel.setPower(power);
                 break;
 
-            case LAUNCH_TELE:
-                vel = 1800;
-                curvel = RflyWheel.getVelocity();
-                power = far_pid.update(vel, curvel);//experiment
-                RflyWheel.setPower(power);
-                LflyWheel.setPower(power);
+
+            case MANUAL:
+                RflyWheel.setVelocity(manual_vel);
+                LflyWheel.setVelocity(manual_vel);
                 break;
 
 

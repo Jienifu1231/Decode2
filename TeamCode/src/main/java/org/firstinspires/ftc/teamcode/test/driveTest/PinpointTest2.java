@@ -1,14 +1,13 @@
-package org.firstinspires.ftc.teamcode.test;
+package org.firstinspires.ftc.teamcode.test.driveTest;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.GorillabotCentral;
 import org.firstinspires.ftc.teamcode.util.Pose2d;
 
 @TeleOp
-public class PinpointTest extends GorillabotCentral {
+public class PinpointTest2 extends GorillabotCentral {
     double drive_factor = 1;
     double heading_factor = 1;
     double strafe_factor = 1;
@@ -17,28 +16,31 @@ public class PinpointTest extends GorillabotCentral {
     @Override
     public void runOpMode() throws InterruptedException {
         initializeComponents();
-        Pose2d curpos = new Pose2d(0,0,0);
 
-        drive.pinpoint.resetPosAndIMU();
+      //  drive.pinpoint.resetPosAndIMU();
+        Pose2d init_pos = new Pose2d(0,0, Math.toRadians(0));
+
+        drive.pinpoint.setPosition(Pose2d.dtoD(init_pos));
+        Pose2d curpos = new Pose2d(0,0, Math.toRadians(0));
+
         waitForStart();
         while(!isStopRequested()){
             //curpos = new Pose2d( curpos.getX() + pinpoint.getPosX(DistanceUnit.INCH),  curpos.getY() + pinpoint.getPosY(DistanceUnit.INCH), curpos.getHeading() + pinpoint.getHeading(AngleUnit.RADIANS));
 
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
+
             drive.setDrivePower(g1.getDrivePower().scale(drive_factor).scaleHeading(heading_factor).scaleX(strafe_factor));
-            //drive.setDrivePower(g1.getDrivePower().scale(1));
             drive.pinpoint.update();
 
+            updateComponents();
             updateControllers();
 
-
-
             telemetry.addData("current Position", curpos);
+            telemetry.addData("Heading", drive.pinpoint.getHeading(AngleUnit.RADIANS));
             telemetry.update();
 
+
         }
-
-
 
 
     }

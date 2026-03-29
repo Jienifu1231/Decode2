@@ -35,6 +35,8 @@ public class Lift {
         lift3 = hardwareMap.get(Servo.class, "lift3");
         lift3.setDirection(Servo.Direction.FORWARD);
 
+        target_state = State.DOWN;
+
     }
 
     public void down() {
@@ -53,7 +55,7 @@ public class Lift {
 
     public void update() {
 
-        /*switch (target_state) {
+        switch (target_state) {
              case DOWN:
                  lift1.setPosition(downpos);
                  lift2.setPosition(downpos);
@@ -72,7 +74,7 @@ public class Lift {
                  lift2.setPosition(manual_pos);//used to be just manual power
                  lift3.setPosition(manual_pos);
                  break;
-         }*/
+         }
 
     }
 }
