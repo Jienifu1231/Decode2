@@ -13,9 +13,9 @@ public class DrivePID {
     public static double strafe_kI = 0.4;//0.3
     public static double strafe_kD = 0;//0.0012d
 
-    public static double forward_kP = 0.04;//0.01//x
-    public static double forward_kI = 0.3;//0.6
-    public static double forward_kD = 0;//0.003
+    public static double forward_kP = 0.02;//0.01//x
+    public static double forward_kI = 0.1;//0.6
+    public static double forward_kD = 0.002;//0.003
 
     double x_kP = forward_kP; //0.095
     double x_kI = forward_kI; //1
@@ -29,7 +29,7 @@ public class DrivePID {
     double y_kD = strafe_kD;
 
     public static double r_kP = 1.3;//1.5
-    public static double r_kI = 0;//0.3
+    public static double r_kI = 0.23;//0.3
     public static double r_kD = 0;//0.1
 
     public double x_norm_vel = 10;
@@ -39,6 +39,8 @@ public class DrivePID {
     public static double x_max = 0.6;
     public static double y_max = 0.6;
     public static double r_max = 0.7;
+
+    public static double integral_sum_limit = 10;
 
     double xy_sense = 1;
     double r_sense = 0.05;
@@ -56,9 +58,9 @@ public class DrivePID {
     public boolean new_target = false;
 
     public DrivePID(){
-        x_pid = new PID(x_kP, x_kI, x_kD, xy_sense, 10, x_norm_vel, x_max, false);
-        y_pid = new PID(y_kP, y_kI, y_kD, xy_sense, 10, y_norm_vel, y_max, false);
-        r_pid = new PID(r_kP, r_kI, r_kD, r_sense, 10, r_norm_vel, r_max, true);
+        x_pid = new PID(x_kP, x_kI, x_kD, xy_sense, 15, x_norm_vel, x_max, false);
+        y_pid = new PID(y_kP, y_kI, y_kD, xy_sense, integral_sum_limit, y_norm_vel, y_max, false);
+        r_pid = new PID(r_kP, r_kI, r_kD, r_sense, integral_sum_limit, r_norm_vel, r_max, true);
     }
 
     public void setMaxPower(Pose2d newPower){

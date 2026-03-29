@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.test;
+package org.firstinspires.ftc.teamcode.test.OuttakeTest;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -49,7 +49,7 @@ public class FlyWheelAngleTest extends GorillabotCentral {
                     }
 
                 }else if(g2.leftBumper.wasJustPressed()) {
-                    Outtake.launch_bang();
+                    Outtake.bang_pid();
                     Angle.manual(0.28);
                 }else if(g2.x.wasJustPressed()){
                     Outtake.stop();

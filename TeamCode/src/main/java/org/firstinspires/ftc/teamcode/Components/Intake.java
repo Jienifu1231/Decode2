@@ -19,7 +19,7 @@ public class Intake {
     }
 
     public State target_state, last_state;
-    public double power = 0.85;
+    public double power = 1;//0.85
 
     public double manualP = 0;
 

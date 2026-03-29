@@ -17,7 +17,7 @@ public class Angle {
     public double manual_pos = 0;
     //THESE
     public double close_pos = 0.169;//0.167
-    public double far_pos = 0.24;//0.28
+    public double far_pos = 0.22;//0.24
     //change these two
 
     public Angle(HardwareMap hardwareMap){

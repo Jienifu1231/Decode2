@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode.test;
+package org.firstinspires.ftc.teamcode.test.OuttakeTest;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GorillabotCentral;
 
 @TeleOp
+@Config
 public class ShooterTest extends GorillabotCentral {
 
 
@@ -13,6 +15,7 @@ public class ShooterTest extends GorillabotCentral {
     public void runOpMode() throws InterruptedException {
     updateControllers();
         initializeComponents();
+        updateComponents();
 
         double output = 0.5;
 
@@ -37,6 +40,10 @@ public class ShooterTest extends GorillabotCentral {
             telemetry.addData("state reached?", Outtake.state_reached);
             telemetry.update();
 
+            dashboardTelemetry.addData("poweer", Outtake.vel);
+            dashboardTelemetry.addData("state", Outtake.target_state);
+            dashboardTelemetry.addData("state reached?", Outtake.state_reached);
+            dashboardTelemetry.update();
 
 
         }
