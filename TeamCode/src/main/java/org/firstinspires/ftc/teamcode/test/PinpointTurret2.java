@@ -67,6 +67,7 @@ public class PinpointTurret2 extends GorillabotCentral {
             telemetry.addData("Turret pos", Turret.turret.getCurrentPosition());
             //telemetry.addData("pid Active", pidActive);
             telemetry.addData("pos reached", pp_pid.pos_reached);
+            telemetry.addData("vel", Turret.turret.getVelocity());
             telemetry.update();
 
             dashboardTelemetry.addData("turret heading", TurretHeading);
