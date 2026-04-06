@@ -30,6 +30,9 @@ public class BlueGateFar extends GorillabotCentral {
     public static Pose2d GateIntake1 = new Pose2d (58,-60, Math.toRadians(-90));
     public static Pose2d GateIntake2 = new Pose2d (55, -60, Math.toRadians(-90));
 
+    public static Pose2d IntakePath3 = new Pose2d (35.75,-18.6, Math.toRadians(-180));
+    public static Pose2d Intake3 = new Pose2d (37.75,-65,Math.toRadians(-90));
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,6 +51,8 @@ public class BlueGateFar extends GorillabotCentral {
         Pose2d curpos = zero;
         double WrapUp = 0;
 
+        double Intake_Index = 0;
+
 
         ElapsedTime timer = new ElapsedTime();
         double init_wait = 0.3;
@@ -58,7 +63,7 @@ public class BlueGateFar extends GorillabotCentral {
 
 
         ElapsedTime ShooterTimer = new ElapsedTime();
-        double Shooting = 1.5;
+        double Shooting = 2;
 
 
         ElapsedTime HPIntakePathTimer = new ElapsedTime();
@@ -71,6 +76,9 @@ public class BlueGateFar extends GorillabotCentral {
 
         ElapsedTime GateIntake = new ElapsedTime();
         double GateIntaking = 1.5;
+
+        ElapsedTime Lime_timer = new ElapsedTime();
+        double Lime_wait = 1.3;
 
 
         waitForStart();
@@ -97,7 +105,7 @@ public class BlueGateFar extends GorillabotCentral {
                     output = drive.goToPosition(ShootPath, 0.6, 2, 0.6, 0.2);
                     Outtake.launch_far();
                     if(WrapUp == 0){
-                        ShootPathWait = ShootPathWait + 1.6;
+                        ShootPathWait = ShootPathWait + 3;
                         WrapUp = 1;
                     }
 
@@ -106,13 +114,22 @@ public class BlueGateFar extends GorillabotCentral {
                         drive.resetPath();
                         ShooterTimer.reset();
                         Intake.stop();
+                        Lime_timer.reset();
                         state = State.SHOOT;
                     }
                     break;
 
 
                 case SHOOT:
-                    Turret.limeRed();
+                   /*if(Lime_timer.seconds() < Lime_wait){
+                        Turret.limeRed();
+                        Intake.stop();
+                        Gate.close();
+                    }else{
+                        Intake.manual(1);
+                        Gate.open();
+                    }*/
+                    //Turret.limeRed();
                     output = zero;
                     Outtake.launch_far();
                     Gate.open();
@@ -154,8 +171,8 @@ public class BlueGateFar extends GorillabotCentral {
 
 
                 case GATEINTAKE:
-                    output = drive.goToPosition(GateIntake1, 0.6, 1, 0.6, 0.1);
-                    Intake.exprelease(true);
+                    output = drive.goToPosition(IntakePath3, 0.6, 1, 0.6, 0.1);
+                    //Intake.exprelease(true);
                     Gate.close();
                     if(GateIntake.seconds() > GateIntaking){
                         drive.resetPath();
@@ -164,9 +181,8 @@ public class BlueGateFar extends GorillabotCentral {
                     }
                     break;
 
-
                 case GATEINTAKE2:
-                    output = drive.goToPosition(GateIntake2, 0.6, 1, 0.6, 0.1);
+                    output = drive.goToPosition(Intake3, 0.6, 1, 0.6, 0.1);
                     Intake.exprelease(true);
                     Gate.close();
                     if(GateIntake.seconds() > GateIntaking){

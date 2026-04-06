@@ -26,6 +26,8 @@ public class RedGateFar extends GorillabotCentral {
     public static Pose2d HPIntake = new Pose2d (67,72,Math.toRadians(90));
     public static Pose2d GateIntake1 = new Pose2d (58,60, Math.toRadians(90));
     public static Pose2d GateIntake2 = new Pose2d (55, 60, Math.toRadians(90));
+    public static Pose2d IntakePath1 = new Pose2d(35.75,18.6, Math.toRadians(180));
+    public static Pose2d Intake1 = new Pose2d (37.75,65,Math.toRadians(90));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -81,7 +83,7 @@ public class RedGateFar extends GorillabotCentral {
                     output = drive.goToPosition(ShootPath, 0.6, 2, 0.6, 0.2);
                     Outtake.launch_far();
                     if(WrapUp == 0){
-                        ShootPathWait = ShootPathWait + 3;
+                        ShootPathWait = ShootPathWait + 4;
                         WrapUp = 1;
                     }
 
@@ -94,11 +96,11 @@ public class RedGateFar extends GorillabotCentral {
                     break;
 
                 case SHOOT:
-                    Turret.limeRed();
+                    //Turret.limeRed();
                     output = zero;
                     Outtake.launch_far_auto();
                     Gate.open();
-                    Angle.far();
+                    Angle.manual(0.218);
                     Intake.exprelease(true);
                     if (ShooterTimer.seconds() > Shooting) {
                         drive.resetPath();
@@ -132,8 +134,8 @@ public class RedGateFar extends GorillabotCentral {
                     break;
 
                 case GATEINTAKE:
-                    output = drive.goToPosition(GateIntake1, 0.6, 1, 0.6, 0.1);
-                    Intake.exprelease(true);
+                    output = drive.goToPosition(IntakePath1, 0.6, 1, 0.6, 0.1);
+                    //Intake.exprelease(true);
                     Gate.close();
                     if(GateIntake.seconds() > GateIntaking){
                         drive.resetPath();
@@ -143,7 +145,7 @@ public class RedGateFar extends GorillabotCentral {
                     break;
 
                 case GATEINTAKE2:
-                    output = drive.goToPosition(GateIntake2, 0.6, 1, 0.6, 0.1);
+                    output = drive.goToPosition(Intake1, 0.6, 1, 0.6, 0.1);
                     Intake.exprelease(true);
                     Gate.close();
                     if(GateIntake.seconds() > GateIntaking){

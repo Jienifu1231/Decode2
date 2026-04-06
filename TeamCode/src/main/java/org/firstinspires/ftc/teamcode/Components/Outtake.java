@@ -20,7 +20,7 @@ public class Outtake {
         LAUNCH_CLOSE,
         LAUNCH_FAR,
         LAUNCH_FAR_AUTO,
-        BANG_PID,
+        COMBINED,
         MANUAL
     }
 
@@ -44,29 +44,31 @@ public class Outtake {
     public VoltageSensor voltageSensor;
     public double voltage;
 
-    public static double kP = 0.00001;//0.000009
+    public static double kP = 0.000007;//0.000009
     public static double kI = 0;//0.1
     public static double kD = 0;//0.00007
-    public static double kV = 0.00034;//0.00034
-    public static double sensitivity = 10;
+    public static double kV = 0.00038;//0.00034
+    public static double sensitivity = 100;
     public static double integral_sum_limit = 10;
     public static double norm_vel = 1000;
     public static double max_speed = 0.9;
     //close angle tuning
 
 
-    public static double far_kP = 0.000014;//0.000006'
+    public static double far_kP = 0.01;//0.000006'
     public static double far_kI = 0.03;
     public static double far_kD = 0;
-    public static double far_kV = 0.00035;//0.00038
+    public static double far_kV = 0.000035;//0.00038
     //tune kV first and make sure it doesnt collide with max speed
 
     public static double far_auto_kV = 0.000335;//0.00034
 
-    public static double far_sensitivity = 0;
-    public static double far_integral_sum_limit = 0;
+    public static double far_sensitivity = 20;
+    public static double far_integral_sum_limit = 10;
     public static double far_norm_vel = 0.9;
     public static double far_max_speed = 1;
+
+    public static int setpoint = 100;
 
     public PIDF close_pid, far_pid, far_auto_pid;
     //switched to PIDF method instead of just PID
@@ -106,7 +108,8 @@ public class Outtake {
 
     public void launch_far(){target_state = State.LAUNCH_FAR;}
     public void launch_far_auto(){target_state = State.LAUNCH_FAR_AUTO;}
-    public void bang_pid(){target_state = State.BANG_PID;}
+    public void combined(){target_state = State.COMBINED;}
+    //add vel input next
 
     public void manual(double vel){target_state = State.MANUAL; manual_vel = vel; }
 
@@ -129,7 +132,7 @@ public class Outtake {
 
 
             case LAUNCH_CLOSE:
-                vel = 1600;//change this based on calculation
+                vel = 1420;//change this based on calculation
                 voltage = voltageSensor.getVoltage();
 
                 curvel = RflyWheel.getVelocity();
@@ -137,23 +140,14 @@ public class Outtake {
                RflyWheel.setPower(power);
                 LflyWheel.setPower(power);
 
-
-                //PID applied -- Test this
-
-                //RflyWheel.setVelocity(vel);
-               // LflyWheel.setVelocity(vel);
-
-                //servo stuff
-
                 break;
 
             case LAUNCH_FAR:
-                // launch_angle = close_angle;
                 vel = 1800;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
-                power = far_pid.update(vel, curvel, voltage);//experiment
+                power = far_pid.update(vel, curvel, voltage);
                RflyWheel.setPower(power);
                LflyWheel.setPower(power);
 
@@ -165,38 +159,32 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR_AUTO:
-                // launch_angle = close_angle;
                 vel = 1800;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
-                power = far_auto_pid.update(vel, curvel, voltage);//experiment
+                power = far_auto_pid.update(vel, curvel, voltage);
                 RflyWheel.setPower(power);
                 LflyWheel.setPower(power);
 
                 voltage = voltageSensor.getVoltage();
-
-                // RflyWheel.setVelocity(vel);
-                //LflyWheel.setVelocity(vel);
-
                 break;
 
-            case BANG_PID:
-                vel = 1500; //later use a linear regression to model based on where we are on the field
+            case COMBINED:
+                vel = 1500; //change
+                curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
-                curvel = RflyWheel.getVelocity();
-                if(curvel <= (vel-200) || curvel >= (vel + 200)){
+                if(curvel <= vel - setpoint){
+                    power = 0.9;
                     bangbang = true;
-                    if(curvel <= (vel -200)){
-                        power = 1;
-                    }
-                    if(curvel >= (vel +200)){
-                        power = 0;
-                    }
+                }else if(curvel >= vel + setpoint){
+                    power = 0;
+                    bangbang = true;
                 }else{
                     power = far_pid.update(vel, curvel, voltage);
                     pid_active = true;
+                    bangbang = false;
                 }
 
                 RflyWheel.setPower(power);

@@ -33,7 +33,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
     public static Pose2d IntakePath2 = new Pose2d (9.75,-18.6, Math.toRadians(-90));//14.75
     public static Pose2d Intake2 = new Pose2d(9.75,-62.6, Math.toRadians(-90));
     public static Pose2d IntakePath3 = new Pose2d(32.75,-18.6, Math.toRadians(-90));//35.75
-    public static Pose2d Intake3 = new Pose2d(32.75,-66,Math.toRadians(-90));
+    public static Pose2d Intake3 = new Pose2d(32.75,-68,Math.toRadians(-90));
 
     public static Pose2d ShootPath2 = new Pose2d (-13.7,-17.5, Math.toRadians(-90));//90
 

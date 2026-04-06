@@ -284,6 +284,13 @@ public class CloseRedAuto extends GorillabotCentral {
             telemetry.addData("drivePID pos reached?", drive.drivePID.pos_reached);
             telemetry.update();
 
+
+            dashboardTelemetry.addData("target vel", -Outtake.vel);
+            dashboardTelemetry.addData("cur vel right", Outtake.RflyWheel.getVelocity());
+            dashboardTelemetry.addData("cur vel left", Outtake.LflyWheel.getVelocity());
+            dashboardTelemetry.update();
+
+
         }
 
     }
