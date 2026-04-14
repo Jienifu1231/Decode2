@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.util.Pose2d;
 @Config
 public class PinpointTurretTest extends GorillabotCentral {
     public PID pp_pid, heading_pid;
-    public static double kp = 0.03;//0.06
-    public static double ki = 0.15;
+    public static double kp = 0.3;//0.06
+    public static double ki = 0.;
     public static double kd = 0;
     public static double sensitivity = 0.1;
     public static double integral_sum_limit = 10;

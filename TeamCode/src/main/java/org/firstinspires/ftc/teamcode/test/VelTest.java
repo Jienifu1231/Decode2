@@ -35,9 +35,11 @@ public class VelTest extends GorillabotCentral {
                 Outtake.launch_far();
             }
 
-            if(g2.b.wasJustPressed()){
+            /*if(g2.b.wasJustPressed()){
                 Outtake.bang_pid();
             }
+
+             */
 
             if(g1.b.wasJustPressed()){
                 Angle.manual(angle_pos);

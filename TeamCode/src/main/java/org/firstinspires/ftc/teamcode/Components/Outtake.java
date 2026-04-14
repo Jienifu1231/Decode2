@@ -55,18 +55,19 @@ public class Outtake {
     //close angle tuning
 
 
-    public static double far_kP = 0.01;//0.000006'
-    public static double far_kI = 0.03;
+    public static double far_kP = 0;//0.0002
+    //0.00019
+    public static double far_kI = 0.08;
     public static double far_kD = 0;
-    public static double far_kV = 0.000035;//0.00038
+    public static double far_kV = 0.00038;//0.00000033
     //tune kV first and make sure it doesnt collide with max speed
 
-    public static double far_auto_kV = 0.000335;//0.00034
+    public static double far_auto_kV = 0.0003;//0.00034
 
     public static double far_sensitivity = 20;
     public static double far_integral_sum_limit = 10;
-    public static double far_norm_vel = 0.9;
-    public static double far_max_speed = 1;
+    public static double far_norm_vel = 0.7;
+    public static double far_max_speed = 0.9;
 
     public static int setpoint = 100;
 
@@ -143,7 +144,7 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR:
-                vel = 1800;//1000
+                vel = 1900;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 

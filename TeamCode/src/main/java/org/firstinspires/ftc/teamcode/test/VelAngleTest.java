@@ -69,7 +69,7 @@ public class VelAngleTest extends GorillabotCentral {
             Angle.manual(angle_pos);
             Outtake.manual(vel);
             }
-
+            drive.setDrivePower(g1.getDrivePower().scale(1).scaleHeading(1).scaleX(1));
             updateComponents();
 
             telemetry.addData("cur vel", vel);

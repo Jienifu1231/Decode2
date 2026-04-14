@@ -55,7 +55,7 @@ public class Turret {
         lime_pid = new PID(kp, ki, kd, sensitivity, integral_sum_limit, normn_vel, max,false);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(5);
+        limelight.pipelineSwitch(2);
         //pipe 5 auto red
         //pipe 3 tele red
         //red close is 1
