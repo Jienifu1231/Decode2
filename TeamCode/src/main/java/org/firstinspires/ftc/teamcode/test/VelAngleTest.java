@@ -41,7 +41,7 @@ public class VelAngleTest extends GorillabotCentral {
 
 
             if(g2.b.wasJustPressed()){
-                Outtake.combined();
+                Outtake.combined(vel);
             }
             //other test
 
@@ -69,6 +69,7 @@ public class VelAngleTest extends GorillabotCentral {
             Angle.manual(angle_pos);
             Outtake.manual(vel);
             }
+
             drive.setDrivePower(g1.getDrivePower().scale(1).scaleHeading(1).scaleX(1));
             updateComponents();
 
@@ -87,7 +88,7 @@ public class VelAngleTest extends GorillabotCentral {
 
             dashboardTelemetry.addData("Outtake state", Outtake.target_state);
             dashboardTelemetry.addData("wheel vel", Outtake.RflyWheel.getVelocity());
-            dashboardTelemetry.addData("target vel", -Outtake.vel);
+            dashboardTelemetry.addData("target vel", -vel);
             dashboardTelemetry.update();
 
 
