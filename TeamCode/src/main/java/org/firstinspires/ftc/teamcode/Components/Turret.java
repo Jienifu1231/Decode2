@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.util.PID;
+import org.firstinspires.ftc.teamcode.util.Pose2d;
 
 @Config
 public class Turret {
@@ -54,6 +55,8 @@ public class Turret {
         last_state = State.STOP;
         lime_pid = new PID(kp, ki, kd, sensitivity, integral_sum_limit, normn_vel, max,false);
 
+        pp_pid = new PID(pp_kp, pp_ki, pp_kd, pp_sensitivity, pp_integral_sum_limit, pp_normn_vel, pp_max,false);
+
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(2);
         //pipe 5 auto red
@@ -75,6 +78,8 @@ public class Turret {
     public static double integral_sum_limit = 10;
     public static double normn_vel = 0.5;
     public static double max = 0.78;
+
+
 /*
     public static double kp = 0.03;//0.06
     public static double ki = 0.15;
@@ -83,13 +88,27 @@ public class Turret {
     public static double integral_sum_limit = 10;
     public static double normn_vel = 0.6;
     public static double max = 0.9;
-
  */
+
+    public static double pp_kp = 1;//0.06
+    public static double pp_ki = 0.4;
+    public static double pp_kd = 0;
+    public static double pp_sensitivity = 0.05;
+    public static double pp_integral_sum_limit = 20;
+    public static double pp_normn_vel = 0.7;
+    public static double pp_max = 0.9;
+    double ticksPerDegree = 5.7;
+
+   public  Pose2d curpos;
+    public double TurretHeading = 0;
+   public  double TurretAngle = 0;
+    public double TurretPos = 0;
+
 
     public void stop(){target_state = State.STOP;}
     public void limeRed(){target_state = State.LIMERED;}
     public void limeBlue(){target_state = State.LIMEBLUE;}
-    public void pinpoint(){target_state = State.PINPOINT;}
+    public void pinpoint(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINT;curpos = PPpos; TurretPos = PPTurretPos;}
     public void manual(double p){turret_power = p; target_state = State.MANUAL;}
 
     public void update(){
@@ -125,7 +144,10 @@ public class Turret {
                 break;
 
             case PINPOINT:
-//using pinpoint to check the heading
+                TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
+                TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;
+                output = pp_pid.update(TurretAngle, TurretHeading);
+                turret.setPower(output);
                 break;
 
             case MANUAL:

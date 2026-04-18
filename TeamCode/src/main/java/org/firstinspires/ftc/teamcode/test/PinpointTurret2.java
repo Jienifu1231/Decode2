@@ -38,22 +38,24 @@ public class PinpointTurret2 extends GorillabotCentral {
         updateControllers();
 
         waitForStart();
-        while(!isStopRequested()){
+        while(!isStopRequested()) {
 
             drive.pinpoint.update();
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
 
             double TurretHeading = Math.toRadians(Turret.turret.getCurrentPosition() / ticksPerDegree);
-           // double TurretBotHeading = TurretHeading + curpos.getHeading();
-            double TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;
+            // double TurretBotHeading = TurretHeading + curpos.getHeading();
+            double TurretAngle = Math.atan2(72 - curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;//exp
 
             output = pp_pid.update(TurretAngle, TurretHeading);
             //pp_pid.update(TurretAngle, TurretHeading);
             //tune
 
-            if(g2.a.isPressed()){
+            if (g2.a.isPressed()) {
+                Turret.pinpoint(curpos, Turret.turret.getCurrentPosition());
+            }else if(g2.b.isPressed()){
                 Turret.manual(output);
-            } else if(g2.rightBumper.isPressed()){
+        }else if(g2.rightBumper.isPressed()){
                 Turret.manual(-0.5);
             }else if(g2.leftBumper.isPressed()){
                 Turret.manual(0.5);//tune
@@ -99,7 +101,8 @@ public class PinpointTurret2 extends GorillabotCentral {
 
             telemetry.addData("turret heading", TurretHeading);//all in radians
             telemetry.addData("Target angle", TurretAngle);
-            telemetry.addData("power", output);
+            telemetry.addData("in program power", output);
+            telemetry.addData("state output", Turret.output);
             telemetry.addData("turret power", Turret.turret.getPower());
             telemetry.addData("Turret pos", Turret.turret.getCurrentPosition());
             //telemetry.addData("pid Active", pidActive);
