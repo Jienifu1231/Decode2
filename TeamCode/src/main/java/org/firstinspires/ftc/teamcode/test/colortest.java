@@ -20,17 +20,11 @@ public class colortest extends GorillabotCentral {
     public void runOpMode() throws InterruptedException {
 
 
-        DigitalChannel led1;
-        led1 = hardwareMap.get(DigitalChannel.class, "led1");
-        led1.setMode(DigitalChannel.Mode.OUTPUT);
+        DigitalChannel led;
+        led = hardwareMap.get(DigitalChannel.class, "led");
+        led.setMode(DigitalChannel.Mode.OUTPUT);
 
-        DigitalChannel led2;
-        led2 = hardwareMap.get(DigitalChannel.class, "led2");
-        led2.setMode(DigitalChannel.Mode.OUTPUT);
 
-        DigitalChannel led3;
-        led3 = hardwareMap.get(DigitalChannel.class, "led3");
-        led3.setMode(DigitalChannel.Mode.OUTPUT);
 
         waitForStart();
         initializeComponents();
@@ -40,27 +34,10 @@ public class colortest extends GorillabotCentral {
             Colors.DetectedColor slot2 = colors.getColor2();
             Colors.DetectedColor slot3 = colors.getColor3();
 
-            if(slot1 == Colors.DetectedColor.BALL){
-                led1.setState(false);
+            if(slot1 == Colors.DetectedColor.BALL && slot2 == Colors.DetectedColor.BALL && slot3 == Colors.DetectedColor.BALL) {
+                led.setState(false);
             }
-            else if(slot1 == Colors.DetectedColor.EMPTY){
-                led1.setState(true);
-            }
-
-            if(slot2 == Colors.DetectedColor.BALL){
-                led2.setState(false);
-            }
-            else if(slot2 == Colors.DetectedColor.EMPTY){
-                led2.setState(true);
-            }
-
-            if(slot3 == Colors.DetectedColor.BALL){
-                led3.setState(false);
-            }
-            else if(slot3 == Colors.DetectedColor.EMPTY){
-                led3.setState(true);
-            }
-
+            else led.setState(true);
 
 
 
