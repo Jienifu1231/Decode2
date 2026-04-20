@@ -44,18 +44,20 @@ public class PinpointTurret2 extends GorillabotCentral {
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
 
             double TurretHeading = Math.toRadians(Turret.turret.getCurrentPosition() / ticksPerDegree);
-            // double TurretBotHeading = TurretHeading + curpos.getHeading();
-            double TurretAngle = Math.atan2(72 - curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;//exp
+
+            double TurretAngle = TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57 +1.57;
+            //exp
+            //blue side test
 
             output = pp_pid.update(TurretAngle, TurretHeading);
             //pp_pid.update(TurretAngle, TurretHeading);
             //tune
 
             if (g2.a.isPressed()) {
-                Turret.pinpoint(curpos, Turret.turret.getCurrentPosition());
+                Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
             }else if(g2.b.isPressed()){
                 Turret.manual(output);
-        }else if(g2.rightBumper.isPressed()){
+            }else if(g2.rightBumper.isPressed()){
                 Turret.manual(-0.5);
             }else if(g2.leftBumper.isPressed()){
                 Turret.manual(0.5);//tune

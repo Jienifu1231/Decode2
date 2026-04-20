@@ -18,7 +18,7 @@ public class Turret {
         STOP,
         LIMERED,
         LIMEBLUE,
-        PINPOINT,
+        PINPOINTRED,
         MANUAL
     }
 
@@ -97,7 +97,7 @@ public class Turret {
     public void stop(){target_state = State.STOP;}
     public void limeRed(){target_state = State.LIMERED;}
     public void limeBlue(){target_state = State.LIMEBLUE;}
-    public void pinpoint(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINT;curpos = PPpos; TurretPos = PPTurretPos;}
+    public void pinpointRed(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINTRED;curpos = PPpos; TurretPos = PPTurretPos;}
     public void manual(double p){turret_power = p; target_state = State.MANUAL;}
 
     public void update(){
@@ -132,7 +132,7 @@ public class Turret {
                 turret.setPower(turret_power);
                 break;
 
-            case PINPOINT:
+            case PINPOINTRED:
                 TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
                 TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;
                 output = pp_pid.update(TurretAngle, TurretHeading);

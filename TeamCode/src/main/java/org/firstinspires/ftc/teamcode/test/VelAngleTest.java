@@ -24,8 +24,10 @@ public class VelAngleTest extends GorillabotCentral {
         initializeComponents();
         updateControllers();
 
-        Pose2d init_pos = new Pose2d(0,0, Math.toRadians(0)); // change this
+        Pose2d init_pos = new Pose2d(0,0, Math.toRadians(90)); // change this
         drive.pinpoint.setPosition(Pose2d.dtoD(init_pos));
+
+        double output = 0;
 
 
         //change this based on calculation
@@ -46,34 +48,61 @@ public class VelAngleTest extends GorillabotCentral {
             //other test
 
             if(g1.x.wasJustPressed()){
-                vel += 200;
+                vel += 50;
             }
             if(g1.y.wasJustPressed()){
-                vel -= 200;
+                vel -= 50;
             }
 
             if(g1.leftBumper.wasJustPressed()){
-               angle_pos += 0.1;
+               angle_pos += 0.02;
                 if(angle_pos >= 1){
                     angle_pos = 1;
                 }
             }
+
             if(g1.rightBumper.wasJustPressed()){
-                angle_pos -= 0.1;
+                angle_pos -= 0.02;
                 if(angle_pos <= 0){
                     angle_pos = 0;
                 }
             }
 
-            if(g1.a.wasJustPressed()){
+            if(g1.leftTrigger.moved()){
+                Intake.manual(1);
+                Gate.open();
+            }else{
+                Intake.stop();
+            }
+
+            if(g1.rightTrigger.moved()){
+                Intake.manual(1);
+                Gate.close();
+            }
+
+            if (g2.a.isPressed()) {
+                Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
+            }else if(g2.b.isPressed()){
+                Turret.manual(output);
+            }else if(g2.rightBumper.isPressed()){
+                Turret.manual(-0.5);
+            }else if(g2.leftBumper.isPressed()){
+                Turret.manual(0.5);//tune
+            }else{
+                Turret.stop();
+            }
+
+            if(g1.a.isPressed()){
             Angle.manual(angle_pos);
-            Outtake.manual(vel);
+            Outtake.launch_close_test(vel);
             }
 
             drive.setDrivePower(g1.getDrivePower().scale(1).scaleHeading(1).scaleX(1));
             updateComponents();
 
             telemetry.addData("cur vel", vel);
+            telemetry.addData("actual Lflywheel vel", Outtake.LflyWheel.getVelocity());
+            telemetry.addData("actual Rflywheel vel", Outtake.RflyWheel.getVelocity());
             telemetry.addData("cur angle", angle_pos);
             telemetry.addData("curret position", curpos);
             telemetry.addData("distance", LinearDis);

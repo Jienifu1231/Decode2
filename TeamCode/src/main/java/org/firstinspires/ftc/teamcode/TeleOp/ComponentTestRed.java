@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GorillabotCentral;
 import org.firstinspires.ftc.teamcode.util.PID;
+import org.firstinspires.ftc.teamcode.util.Pose2d;
 
 @TeleOp
 @Config
@@ -23,6 +24,14 @@ public class ComponentTestRed extends GorillabotCentral {
     public void runOpMode() throws InterruptedException {
 
         initializeComponents();
+        Pose2d curpos = zero;
+
+        Pose2d reloc = zero;
+
+        Pose2d init_pos = new Pose2d(65.5,64.4, Math.toRadians(180));
+        drive.pinpoint.setPosition(Pose2d.dtoD(init_pos));
+
+        double TurretTicks;
         double tx = 0;
         double output = 0;
         boolean pidActive = false;
@@ -35,6 +44,10 @@ public class ComponentTestRed extends GorillabotCentral {
         waitForStart();
 
         while(!isStopRequested()){
+            drive.pinpoint.update();
+            curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
+
+            TurretTicks = Turret.turret.getCurrentPosition();
 
             drive.setDrivePower(g1.getDrivePower().scale(1));
 
@@ -72,6 +85,13 @@ public class ComponentTestRed extends GorillabotCentral {
                 initLime(3);
             }
 
+            if(g2.dpadDown.wasJustPressed()){
+                reloc = new Pose2d(65.5,64.4, Math.toRadians(180));//find coordinates
+                drive.pinpoint.setPosition(Pose2d.dtoD(reloc));
+                drive.pinpoint.recalibrateIMU();//robot has to be still?
+                drive.pinpoint.update();
+            }//expe
+
 
             limeResult = limelight.getLatestResult();
             if(limeResult != null && limeResult.isValid()){
@@ -80,10 +100,15 @@ public class ComponentTestRed extends GorillabotCentral {
                 pidActive = false;
             }
 
+            /*
             if(g2.a.isPressed()){
                 tx = limeResult.getTx();
                 output = lime_pid.update(0, tx);//could be negativ
                 Turret.manual(output);
+
+             */
+            if(g2.a.isPressed()){
+                Turret.pinpointRed(curpos, TurretTicks);
             }else if(g2.leftTrigger.moved()){
                 Turret.limeBlue();
             } else if(g2.rightBumper.isPressed()){
@@ -120,22 +145,20 @@ public class ComponentTestRed extends GorillabotCentral {
 
 
             updateComponents();
-            //intake update in updateComponents()
 
-            telemetry.addData("intake state", Intake.target_state);
+            telemetry.addData("current pos", curpos);
+            telemetry.addData("reloc pos", reloc);
+            telemetry.addData("turret ticks", TurretTicks);
+            telemetry.addData("turret power", Turret.turret.getPower());
             telemetry.addData("outtake state", Outtake.target_state);
             telemetry.addData("outtake power right", Outtake.RflyWheel.getPower());
             telemetry.addData("outtake power left", Outtake.LflyWheel.getPower());
-            telemetry.addData("outtake power variable", Outtake.power);
             telemetry.addData("fly wheel vel", Outtake.RflyWheel.getVelocity());
             telemetry.addData("fly wheel vel left", Outtake.LflyWheel.getVelocity());
             telemetry.addData("rfly wheel pos", Outtake.RflyWheel.getCurrentPosition());
             telemetry.addData("lfly wheel pos", Outtake.LflyWheel.getCurrentPosition());
             telemetry.addData("wheel vel just for testing", drive.backLeft.getVelocity());
             telemetry.addData("turret state", Turret.target_state);
-            telemetry.addData("turret power", Turret.turret.getPower());
-            telemetry.addData("gate position", Gate.Gate1.getPosition());
-            telemetry.addData("gateOpen boolean", Intake.gateOpen);
             telemetry.addData("angle servo", Angle.outtake_angle.getPosition());
             telemetry.addData("output of far_pid", Outtake.far_pid.out);
             telemetry.update();
@@ -144,7 +167,9 @@ public class ComponentTestRed extends GorillabotCentral {
             dashboardTelemetry.addData("cur vel right", Outtake.RflyWheel.getVelocity());
             dashboardTelemetry.addData("cur vel left", Outtake.LflyWheel.getVelocity());
             dashboardTelemetry.addData("tx", tx);
-            dashboardTelemetry.addData("target", 0);
+            dashboardTelemetry.addData("lime target", 0);
+            dashboardTelemetry.addData("turret target ang", Turret.TurretAngle);
+            dashboardTelemetry.addData("turret current heading", Turret.TurretHeading);
             dashboardTelemetry.update();
         }
 

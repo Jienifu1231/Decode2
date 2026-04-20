@@ -18,6 +18,7 @@ public class Outtake {
     public enum State {
         WAITING,
         LAUNCH_CLOSE,
+        LAUNCH_CLOSE_TEST,
         LAUNCH_FAR,
         LAUNCH_FAR_AUTO,
         COMBINED,
@@ -38,6 +39,7 @@ public class Outtake {
     public boolean pid_active = false;
 
     public double manual_vel;
+    public double test_vel=1000;
     public double combined_vel;
 
     public DcMotorEx LflyWheel;
@@ -110,6 +112,7 @@ public class Outtake {
 
     public void launch_far(){target_state = State.LAUNCH_FAR;}
     public void launch_far_auto(){target_state = State.LAUNCH_FAR_AUTO;}
+    public void launch_close_test(double vel){target_state = State.LAUNCH_CLOSE_TEST; test_vel = vel;}
     public void combined(double c_vel){target_state = State.COMBINED; combined_vel = c_vel; }
     //add vel input next
 
@@ -142,6 +145,14 @@ public class Outtake {
                RflyWheel.setPower(power);
                 LflyWheel.setPower(power);
 
+                break;
+
+            case LAUNCH_CLOSE_TEST://change this based on calculation --- 1420
+                voltage = voltageSensor.getVoltage();
+                curvel = RflyWheel.getVelocity();
+                power = close_pid.update(test_vel, curvel, voltage);
+                RflyWheel.setPower(power);
+                LflyWheel.setPower(power);
                 break;
 
             case LAUNCH_FAR:
