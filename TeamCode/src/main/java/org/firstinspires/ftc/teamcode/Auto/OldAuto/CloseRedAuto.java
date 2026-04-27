@@ -32,8 +32,8 @@ public class CloseRedAuto extends GorillabotCentral {
     public static Pose2d Intake1 = new Pose2d(-14,54,Math.toRadians(90));//62.6
     public static Pose2d IntakePath2 = new Pose2d (9.75,18.6, Math.toRadians(90));//14.75
     public static Pose2d Intake2 = new Pose2d(9.75,62.6, Math.toRadians(90));
-    public static Pose2d IntakePath3 = new Pose2d(32.75,18.6, Math.toRadians(90));//35.75
-    public static Pose2d Intake3 = new Pose2d(32.75,66,Math.toRadians(90));
+    public static Pose2d IntakePath3 = new Pose2d(34,18.6, Math.toRadians(90));//35.75
+    public static Pose2d Intake3 = new Pose2d(34,66,Math.toRadians(90));
 
     public static Pose2d ShootPath2 = new Pose2d (-13.7,17.5, Math.toRadians(90));//90
 
@@ -69,11 +69,14 @@ public class CloseRedAuto extends GorillabotCentral {
         ElapsedTime IntakingTimer = new ElapsedTime();
         double Intaking = 2;
 
+        double TurretTicks = 0;
+
         waitForStart();
         while(!isStopRequested()){
             drive.pinpoint.update();
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
             drive.pose = curpos;
+            TurretTicks = Turret.turret.getCurrentPosition();
 
             switch(state){
                 case INIT:
@@ -90,14 +93,15 @@ public class CloseRedAuto extends GorillabotCentral {
 
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.6, 1, 0.6, 0.1);//0.4
+                    Turret.pinpointRed(curpos, TurretTicks);
                     if(intakeIndex == 0) {
-                        Outtake.launch_far();
+                        Outtake.launch_close();
                     }else{
                         Outtake.launch_close();
                     }
                     Gate.close();
                     Intake.exprelease(true);
-                    Turret.limeRed();
+                    //Turret.limeRed();
                     if(intakeIndex == 0){
                         shootPathWait = 2.8
                         ;
@@ -116,14 +120,16 @@ public class CloseRedAuto extends GorillabotCentral {
                      //Turret.limeRed();
                     //updated here
                     output = zero;
-                    Outtake.launch_close();
+
                     Gate.open();
                     Intake.exprelease(true);
 
                     if(intakeIndex == 0){
+                        Outtake.launch_far();
                         Angle.close();
                     }else {
                         Angle.manual(0.1745);
+                        Outtake.launch_close();
                     }
 
                     if(ShooterTimer.seconds() > shooting) {
@@ -227,7 +233,7 @@ public class CloseRedAuto extends GorillabotCentral {
                 case INTAKE3:
                     output = drive.goToPosition(Intake3, 0.6,1, 0.6, 0.1);
                     Gate.close();
-                    Intaking = 3.5;
+                    Intaking = 2;
                     if(IntakingTimer.seconds() <= Intaking){
                         Intake.exprelease(true);
                     }else{
@@ -279,9 +285,13 @@ public class CloseRedAuto extends GorillabotCentral {
             telemetry.addData("current pos", curpos);
             telemetry.addData("Intake state", Intake.target_state);
             telemetry.addData("Outtake state", Outtake.target_state);
+            telemetry.addData("Outtake ticks", Outtake.RflyWheel.getVelocity());
             telemetry.addData("shoot index", shootIndex);
             telemetry.addData("intake index ", intakeIndex );
             telemetry.addData("drivePID pos reached?", drive.drivePID.pos_reached);
+            telemetry.addData("Turret power", Turret.turret.getPower());
+            telemetry.addData("Turret Ticks", TurretTicks);
+            telemetry.addData("Turret State", Turret.target_state);
             telemetry.update();
 
 

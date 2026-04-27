@@ -97,7 +97,8 @@ public class Turret {
     public void stop(){target_state = State.STOP;}
     public void limeRed(){target_state = State.LIMERED;}
     public void limeBlue(){target_state = State.LIMEBLUE;}
-    public void pinpointRed(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINTRED;curpos = PPpos; TurretPos = PPTurretPos;}
+    public void pinpointRed(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINTRED; curpos = PPpos; TurretPos = PPTurretPos;}
+
     public void manual(double p){turret_power = p; target_state = State.MANUAL;}
 
     public void update(){

@@ -54,6 +54,13 @@ public class VelAngleTest extends GorillabotCentral {
                 vel -= 50;
             }
 
+            if(g1.dpadUp.wasJustPressed()){
+                vel += 20;
+            }
+            if(g1.dpadDown.wasJustPressed()){
+                vel -= 20;
+            }
+
             if(g1.leftBumper.wasJustPressed()){
                angle_pos += 0.02;
                 if(angle_pos >= 1){
@@ -93,15 +100,14 @@ public class VelAngleTest extends GorillabotCentral {
             }
 
             if(g1.a.isPressed()){
-            Angle.manual(angle_pos);
-            Outtake.launch_close_test(vel);
+                Angle.manual(angle_pos);
+                Outtake.launch_close_test(vel);
             }
 
             drive.setDrivePower(g1.getDrivePower().scale(1).scaleHeading(1).scaleX(1));
             updateComponents();
 
             telemetry.addData("cur vel", vel);
-            telemetry.addData("actual Lflywheel vel", Outtake.LflyWheel.getVelocity());
             telemetry.addData("actual Rflywheel vel", Outtake.RflyWheel.getVelocity());
             telemetry.addData("cur angle", angle_pos);
             telemetry.addData("curret position", curpos);
@@ -113,6 +119,7 @@ public class VelAngleTest extends GorillabotCentral {
             telemetry.addData("current Voltage", Outtake.voltage);
             telemetry.addData("bang bang", Outtake.bangbang);
             telemetry.addData("if pid is true", Outtake.pid_active);
+            telemetry.addData("Turret Power", Turret.turret.getVelocity());
             telemetry.update();
 
             dashboardTelemetry.addData("Outtake state", Outtake.target_state);

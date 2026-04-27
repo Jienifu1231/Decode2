@@ -50,6 +50,8 @@ public class NewCloseBlueAuto extends GorillabotCentral {
         Pose2d output = zero;
         Pose2d curpos = zero;
 
+        double TurretTicks = 0;
+
         int shootIndex = 0;// how much b// alls we shot
         int intakeIndex = 0;
 
@@ -74,6 +76,8 @@ public class NewCloseBlueAuto extends GorillabotCentral {
             drive.pinpoint.update();
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
             drive.pose = curpos;
+
+            TurretTicks = Turret.turret.getCurrentPosition();
 
             switch(state){
                 case INIT:
@@ -101,6 +105,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
                         shootPathWait = 2.7;//2.8
                     }
                     if(ShootPathTimer.seconds() > shootPathWait){
+                        //Turret.pinpointRed(curpos, TurretTicks);
                         //drive.drivePID.pos_reached == true &&
                         drive.resetPath();
                         ShooterTimer.reset();
