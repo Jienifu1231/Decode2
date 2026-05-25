@@ -28,10 +28,10 @@ public class NewCloseBlueAuto extends GorillabotCentral {
 
     public static Pose2d ShootPath = new Pose2d(-13,-17.5, Math.toRadians(-90));//Position 2 -- angel should be constant
     //--13.7
-    public static Pose2d IntakePath1 = new Pose2d(-14,-18.6, Math.toRadians(-90));//-10
-    public static Pose2d Intake1 = new Pose2d(-14,-54,Math.toRadians(-90));//62.6
+    public static Pose2d IntakePath1 = new Pose2d(-15,-18.6, Math.toRadians(-90));//-10
+    public static Pose2d Intake1 = new Pose2d(-15,-54,Math.toRadians(-90));//62.6
     public static Pose2d IntakePath2 = new Pose2d (9.75,-18.6, Math.toRadians(-90));//14.75
-    public static Pose2d Intake2 = new Pose2d(9.75,-62.6, Math.toRadians(-90));
+    public static Pose2d Intake2 = new Pose2d(7,-54, Math.toRadians(-90));
     public static Pose2d IntakePath3 = new Pose2d(32.75,-18.6, Math.toRadians(-90));//35.75
     public static Pose2d Intake3 = new Pose2d(32.75,-68,Math.toRadians(-90));
 
@@ -59,17 +59,18 @@ public class NewCloseBlueAuto extends GorillabotCentral {
         double init_wait = 0.3;
 
         ElapsedTime ShootPathTimer = new ElapsedTime();
-        double shootPathWait = 2;//probably change this one out
+        double shootPathWait = 1.6;//probably change this one out
 
         ElapsedTime ShooterTimer  = new ElapsedTime();
-        double shooting = 1.2;//1
+        double shooting = 1;//1
 
         ElapsedTime IntakePathTimer = new ElapsedTime();
         double intakePathWait = 1;//maybe this one as well
         // 0.8
 
         ElapsedTime IntakingTimer = new ElapsedTime();
-        double Intaking = 2;
+        double Intaking = 1.5;
+
 
         waitForStart();
         while(!isStopRequested()){
@@ -100,7 +101,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
                     }
                     Gate.close();
                     Intake.exprelease(true);
-                    Turret.limeRed();
+                    Turret.pinpointBlue(curpos, TurretTicks);
                     if(intakeIndex == 0){
                         shootPathWait = 2.7;//2.8
                     }
@@ -230,7 +231,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
                 case INTAKE3:
                     output = drive.goToPosition(Intake3, 0.6,1, 0.6, 0.1);
                     Gate.close();
-                    Intaking = 2.8;
+                    Intaking = 1.8;
                     if(IntakingTimer.seconds() <= Intaking){
                         Intake.exprelease(true);
                     }else{
@@ -254,7 +255,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
                     break;
 
                 case SHOOT2:
-                    Turret.limeRed();
+                    Turret.pinpointBlue(curpos, TurretTicks);
                     //updated here
                     output = zero;
                     Outtake.launch_close();
@@ -270,6 +271,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
 
                 case STOP:
                     output = drive.goToPosition(stop, 0.6, 1, 0.6, 0.1);
+                    Turret.reset(Turret.turret.getCurrentPosition());
 
 
 
@@ -286,6 +288,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
             telemetry.addData("intake index ", intakeIndex );
             telemetry.addData("drivePID pos reached?", drive.drivePID.pos_reached);
             telemetry.update();
+
 
         }
 

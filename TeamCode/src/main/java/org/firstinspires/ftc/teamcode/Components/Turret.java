@@ -19,6 +19,8 @@ public class Turret {
         LIMERED,
         LIMEBLUE,
         PINPOINTRED,
+        PINPOINTBLUE,
+        RESET,
         MANUAL
     }
 
@@ -31,7 +33,7 @@ public class Turret {
     public DcMotorEx turret;
 
    public  PID lime_pid;
-   public PID pp_pid;
+   public PID pp_pid, pp_Bpid;
    public double tx =0;
     public double output = 0;
    public boolean llresult = false;
@@ -56,6 +58,7 @@ public class Turret {
         lime_pid = new PID(kp, ki, kd, sensitivity, integral_sum_limit, normn_vel, max,false);
 
         pp_pid = new PID(pp_kp, pp_ki, pp_kd, pp_sensitivity, pp_integral_sum_limit, pp_normn_vel, pp_max,false);
+        pp_Bpid = new PID(B_kp, B_ki, B_kd, B_sensitivity, B_integral_sum_limit, B_normn_vel, B_max, false);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(2);
@@ -71,13 +74,21 @@ public class Turret {
 
     }
 
-    public static double kp = 0.036;//0.039                                                                             
+    public static double kp = 0.04;//0.039
     public static double ki = 0.15;//0.15
     public static double kd = 0;
     public static double sensitivity = 2;
     public static double integral_sum_limit = 10;
     public static double normn_vel = 0.5;
     public static double max = 0.78;
+
+    public static double B_kp = 1.1;//1
+    public static double B_ki = 0.17;//0.15
+    public static double B_kd = 0;
+    public static double B_sensitivity = 0.05;
+    public static double B_integral_sum_limit = 30;
+    public static double B_normn_vel = 0.7;
+    public static double B_max = 0.9;
 
     public static double pp_kp = 1;//0.06
     public static double pp_ki = 0.4;
@@ -98,6 +109,10 @@ public class Turret {
     public void limeRed(){target_state = State.LIMERED;}
     public void limeBlue(){target_state = State.LIMEBLUE;}
     public void pinpointRed(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINTRED; curpos = PPpos; TurretPos = PPTurretPos;}
+
+    public void pinpointBlue(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINTBLUE; curpos = PPpos; TurretPos = PPTurretPos; }
+
+    public void reset(double CurrentDegree){target_state = State.RESET; TurretPos = CurrentDegree;}
 
     public void manual(double p){turret_power = p; target_state = State.MANUAL;}
 
@@ -134,9 +149,30 @@ public class Turret {
                 break;
 
             case PINPOINTRED:
+                if(-573 <= TurretPos && TurretPos <= 609) {
+                    TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
+                    TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;
+                    output = pp_pid.update(TurretAngle, TurretHeading);
+                }else{
+                    output = 0;
+                }
+                turret.setPower(output);
+                break;
+
+            case PINPOINTBLUE:
+                if(-573 <= TurretPos && TurretPos <= 609) {
+                    TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
+                    TurretAngle = Math.atan2(-(72 - curpos.getY()), -(curpos.getX() - 72)) - curpos.getHeading() - 1.57;
+                    output = pp_Bpid.update(TurretAngle, TurretHeading);
+                }else{
+                    output = 0;
+                }
+                turret.setPower(output);
+                break;
+
+            case RESET:
                 TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
-                TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;
-                output = pp_pid.update(TurretAngle, TurretHeading);
+                output = pp_pid.update(0, TurretHeading);
                 turret.setPower(output);
                 break;
 

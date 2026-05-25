@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.GorillabotCentral;
 import org.firstinspires.ftc.teamcode.util.PID;
+import org.firstinspires.ftc.teamcode.util.Pose2d;
 
 @TeleOp
 @Config
@@ -34,6 +35,9 @@ public class ComponenetTestBlue extends GorillabotCentral {
     public void runOpMode() throws InterruptedException {
 
         initializeComponents();
+        Pose2d curpos = zero;
+        Pose2d reloc = zero;
+
         double pos = 0;
         double tx = 0;
         double output = 0;
@@ -44,11 +48,22 @@ public class ComponenetTestBlue extends GorillabotCentral {
         //2 -- blue far
         lime_pid = new PID(kp, ki, kd, sensitivity, integral_sum_limit, normn_vel, max,false);
 
+        double TurretTicks =0;
+
         updateControllers();
+        
+        
+        while(!isStarted()){
+            drive.pinpoint.recalibrateIMU();
+        }
 
         waitForStart();
 
         while(!isStopRequested()){
+            drive.pinpoint.update();
+            curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
+
+            TurretTicks = Turret.turret.getCurrentPosition();
 
             drive.setDrivePower(g1.getDrivePower().scale(1));
 
@@ -74,54 +89,36 @@ public class ComponenetTestBlue extends GorillabotCentral {
             }else if(g2.x.wasJustPressed()){
                 Outtake.stop();
             }
-            //Outtake.stop();
-            // }
 
 
-
-            if(g2.dpadLeft.wasJustPressed()){
-                //CurPep = 0;//blue close
-                initLime(0);
-            }
-            if(g2.dpadRight.wasJustPressed()){
-                // CurPep = 2;
-                initLime(2);
+            if(g1.touchpad.wasJustPressed()){
+                reloc = new Pose2d(-10.25,-54, Math.toRadians(-90));//65.5,-64.4, Math.toRadians(180)
+                drive.pinpoint.setPosition(Pose2d.dtoD(reloc));
+                drive.pinpoint.recalibrateIMU();//robot has to be still?8
+                drive.pinpoint.update();
+                //TurretTicks = Turret.turret.getCurrentPosition();
             }
 
-            limeResult = limelight.getLatestResult();
+           /* limeResult = limelight.getLatestResult();
             if(limeResult != null && limeResult.isValid()){
                 pidActive = true;
             }else{
                 pidActive = false;
             }
 
+            */
+
             if(g2.a.isPressed()){
-                tx = limeResult.getTx();
-                output = lime_pid.update(0, tx);//could be negativ
-                Turret.manual(output);
-            } else if(g2.leftTrigger.moved()){
-                Turret.limeBlue();
-            } else if(g2.rightBumper.isPressed()){
+                Turret.pinpointBlue(curpos, TurretTicks);//could be negativ
+            }else if(g2.rightBumper.isPressed()){
                 Turret.manual(-0.5);
             }else if(g2.leftBumper.isPressed()){
                 Turret.manual(0.5);//tune
+            }else if(g2.dpadLeft.isPressed()){
+                Turret.reset(Turret.turret.getCurrentPosition());
             }else{
                 Turret.stop();
             }
-
-           /* if(g2.a.isPressed()){
-                tx = limeResult.getTx();
-                output = lime_pid.update(0, tx);//could be negativ
-                Turret.manual(output);
-            }
-            if(g2.leftTrigger.moved()){
-                Turret.limeBlue();
-            } else if(g2.rightBumper.isPressed()){
-                Turret.manual(-0.5);
-            }
-            */
-
-            //try this logic
 
 
 
@@ -132,13 +129,13 @@ public class ComponenetTestBlue extends GorillabotCentral {
                 Gate.close();
             }
 
-            if(g2.y.wasJustPressed() && g2.b.wasJustPressed()){
+            if(g1.dpadDown.wasJustPressed() && g1.dpadRight.wasJustPressed()){
                 Lift.manual(0.5);
                 if(Lift.lift1.getPosition() == 0.5){
-                        Lift.manual(1);
+                    Lift.manual(1);
                 }
                 pos = 1;
-            }else if(g2.dpadUp.wasJustPressed()){
+            }else if(g1.dpadLeft.wasJustPressed()){
                 pos -= 0.1;
                 if(pos <= 0){
                     pos = 0;
@@ -150,6 +147,8 @@ public class ComponenetTestBlue extends GorillabotCentral {
             updateComponents();
             //intake update in updateComponents()
 
+            telemetry.addData("current pos", curpos);
+            telemetry.addData("reloc pos", reloc);
             telemetry.addData("intake state", Intake.target_state);
             telemetry.addData("outtake state", Outtake.target_state);
             telemetry.addData("outtake power right", Outtake.RflyWheel.getPower());
@@ -162,7 +161,6 @@ public class ComponenetTestBlue extends GorillabotCentral {
             telemetry.addData("wheel vel just for testing", drive.backLeft.getVelocity());
             telemetry.addData("turret state", Turret.target_state);
             telemetry.addData("turret power", Turret.turret.getPower());
-            telemetry.addData("lime pepline", CurPep);
             telemetry.addData("gate position", Gate.Gate1.getPosition());
             telemetry.addData("gateOpen boolean", Intake.gateOpen);
             telemetry.addData("angle servo", Angle.outtake_angle.getPosition());
@@ -175,6 +173,10 @@ public class ComponenetTestBlue extends GorillabotCentral {
             dashboardTelemetry.addData("cur vel left", Outtake.LflyWheel.getVelocity());
             dashboardTelemetry.addData("tx", tx);
             dashboardTelemetry.addData("target", 0);
+            dashboardTelemetry.addData("turret target ang", Turret.TurretAngle);
+            dashboardTelemetry.addData("turret current heading", Turret.TurretHeading);
+            dashboardTelemetry.addData("power", -1000 * Outtake.RflyWheel.getPower());
+            dashboardTelemetry.addData("error", Outtake.error);
             dashboardTelemetry.update();
         }
 

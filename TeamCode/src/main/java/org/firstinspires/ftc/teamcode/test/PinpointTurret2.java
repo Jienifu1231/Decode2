@@ -43,11 +43,12 @@ public class PinpointTurret2 extends GorillabotCentral {
             drive.pinpoint.update();
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
 
-            double TurretHeading = Math.toRadians(Turret.turret.getCurrentPosition() / ticksPerDegree);
-
-            double TurretAngle = TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57 +1.57;
-            //exp
-            //blue side test
+            double TurretHeading = Math.toRadians(Turret.turret.getCurrentPosition() / ticksPerDegree) ;
+            double TurretAngle = Math.atan2(-(72 - curpos.getY()) , -(curpos.getX() - 72)) - curpos.getHeading() - 1.57;
+           // double TurretAngle = Math.atan2(-(72 - curpos.getY()), -(72 - curpos.getX())) + curpos.getHeading();
+            //Math.atan2(-(72 - curpos.getY()) , -(curpos.getX() - 72)) - curpos.getHeading()
+            //  Math.atan2(72 - curpos.getY() , 72 - curpos.getX()) - curpos.getHeading(
+            // blue side test
 
             output = pp_pid.update(TurretAngle, TurretHeading);
             //pp_pid.update(TurretAngle, TurretHeading);
@@ -94,6 +95,10 @@ public class PinpointTurret2 extends GorillabotCentral {
                 Gate.open();
             }else{
                 Gate.close();
+            }
+
+            if(g1.b.wasJustPressed()){
+                Turret.reset(Turret.turret.getCurrentPosition());
             }
 
             drive.setDrivePower(g1.getDrivePower().scale(1).scaleHeading(1).scaleX(1));

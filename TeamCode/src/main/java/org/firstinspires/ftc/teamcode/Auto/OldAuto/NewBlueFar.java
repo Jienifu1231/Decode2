@@ -59,7 +59,7 @@ public class NewBlueFar extends GorillabotCentral {
         double init_wait = 0.3;
 
         ElapsedTime ShootPathTimer = new ElapsedTime();
-        double shootPathWait = 2;
+        double shootPathWait = 1.8;
 
         ElapsedTime LimeTimer = new ElapsedTime();
         double LimeWait = 1.3;
@@ -75,12 +75,15 @@ public class NewBlueFar extends GorillabotCentral {
 
         ElapsedTime IntakingTimer = new ElapsedTime();
         double Intaking = 1.5;
+        double TurretTicks = 0;
 
         waitForStart();
         while (!isStopRequested()) {
             drive.pinpoint.update();
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
             drive.pose = curpos;
+
+            TurretTicks = Turret.turret.getCurrentPosition();
 
             switch(state){
                 case INIT:
@@ -98,7 +101,7 @@ public class NewBlueFar extends GorillabotCentral {
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.6, 1, 0.6, 0.1);
                     Outtake.launch_far();
-                    //Turret.limeRed();
+                    Turret.pinpointBlue(curpos, TurretTicks);
                     Angle.far();
                     Intake.manual(0.4);
                     if(WrapUp == 0){
@@ -120,17 +123,8 @@ public class NewBlueFar extends GorillabotCentral {
                 case SHOOT:
                     //update here
                     output = zero;
-
-                    if(LimeTimer.seconds() < LimeWait){
-                        Turret.limeRed();
-                        Intake.stop();
-                        Gate.close();
-                    }else{
                         Intake.manual(1);
                         Gate.open();
-                   }
-
-
 
                     //Intake.manual(1);
                     //Gate.open();
@@ -141,7 +135,7 @@ public class NewBlueFar extends GorillabotCentral {
                     if(ShooterTimer.seconds() > shooting) {
                         //Outtake.launch_far();
                         Intake.stop();
-                        Turret.stop();
+                        Turret.pinpointBlue(curpos, TurretTicks);
                         IntakePathTimer.reset();
                         if (intakeIndex == 0) {
                             drive.resetPath();
@@ -167,7 +161,7 @@ public class NewBlueFar extends GorillabotCentral {
                     output = drive.goToPosition(IntakePath1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
 
-                    if(drive.drivePID.pos_reached == true && IntakePathTimer.seconds() > intakePathWait){
+                    if(drive.drivePID.pos_reached == true || IntakePathTimer.seconds() > intakePathWait){
                         //drive.drivePID.pos_reached == true &&
                         //if got stucked in the state then take out the pos_reached part
                         drive.resetPath();
@@ -268,8 +262,13 @@ public class NewBlueFar extends GorillabotCentral {
                     }else{
                         Outtake.launch_close();
                         output = zero;
-                        state = State.CHECK;
+                        state = State.STOP;
                     }
+                    break;
+
+                case STOP:
+                    output = drive.goToPosition(Stop, 0.6, 1, 0.6, 0.1);
+                    Turret.reset(Turret.turret.getCurrentPosition());
                     break;
 
             }
@@ -279,6 +278,7 @@ public class NewBlueFar extends GorillabotCentral {
 
             telemetry.addData("state", state);
             telemetry.addData("current pos", curpos);
+            telemetry.addData("Turret State", Turret.target_state);
             telemetry.addData("Intake state", Intake.target_state);
             telemetry.addData("Outtake state", Outtake.target_state);
             telemetry.addData("shoot index", shootIndex);

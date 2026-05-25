@@ -125,7 +125,7 @@ public class CloseRedAuto extends GorillabotCentral {
                     Intake.exprelease(true);
 
                     if(intakeIndex == 0){
-                        Outtake.launch_far();
+                        Outtake.launch_far();//far
                         Angle.close();
                     }else {
                         Angle.manual(0.1745);
@@ -152,7 +152,7 @@ public class CloseRedAuto extends GorillabotCentral {
                         }
                         if(intakeIndex ==3){
                             drive.resetPath();
-                            state = State.INTAKEPATH;
+                            state = State.STOP;
                         }
                     }
                     break;
@@ -160,6 +160,7 @@ public class CloseRedAuto extends GorillabotCentral {
                 case INTAKEPATH:
                     output = drive.goToPosition(IntakePath1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
+                    Outtake.launch_close();
                     if(IntakePathTimer.seconds() > intakePathWait){
                         //drive.drivePID.pos_reached == true
                         drive.resetPath();
@@ -171,6 +172,7 @@ public class CloseRedAuto extends GorillabotCentral {
                 case INTAKE:
                     output = drive.goToPosition(Intake1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
+                    Outtake.launch_close();
                     if(IntakingTimer.seconds() <= Intaking){
                         Intake.exprelease(true);
                     }else{
@@ -246,34 +248,9 @@ public class CloseRedAuto extends GorillabotCentral {
                     }
                     break;
 
-                case PATH2:
-                    output = drive.goToPosition(ShootPath2, 0.6, 1, 0.6, 0.1);
-                    if(drive.drivePID.pos_reached == true|| ShootPathTimer.seconds() > shootPathWait){
-                        drive.resetPath();
-                        ShooterTimer.reset();
-                        Intake.stop();
-                        state = State.SHOOT2;
-                    }
-                    break;
-
-                case SHOOT2:
-                    Turret.limeRed();
-                    //updated here
-                    output = zero;
-                    Outtake.launch_close();
-                    Gate.open();
-                    Intake.exprelease(true);
-                    if(ShooterTimer.seconds() > shooting){
-                        Outtake.stop();
-                        Turret.stop();
-                        Intake.stop();
-                        state = State.STOP;
-                    }
-                    break;
-
                 case STOP:
                     output = drive.goToPosition(stop, 0.6, 1, 0.6, 0.1);
-
+                    Turret.reset(Turret.turret.getCurrentPosition());
 
 
             }

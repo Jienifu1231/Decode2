@@ -46,6 +46,7 @@ public class Outtake {
     public DcMotorEx RflyWheel;
     public VoltageSensor voltageSensor;
     public double voltage;
+    public double error = 0;
 
     public static double kP = 0.0000075;//0.000009
     public static double kI = 0.002;//0.02
@@ -58,11 +59,10 @@ public class Outtake {
     //close angle tuning
 
 
-    public static double far_kP = 0.000179;//0.0002
-    //0.00019
-    public static double far_kI = 0.08;
+    public static double far_kP = 0.0000175;//0.0000182
+    public static double far_kI = 0.09;//0.08
     public static double far_kD = 0;
-    public static double far_kV = 0.000037;//0.00000033
+    public static double far_kV = 0.00033;//0.00033
     //tune kV first and make sure it doesnt collide with max speed
 
     public static double far_auto_kV = 0.0003;//0.00034
@@ -156,13 +156,15 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR:
-                vel = 1900;//1000
+                vel = 1800;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
+                error = vel - curvel;
                 power = far_pid.update(vel, curvel, voltage);
-               RflyWheel.setPower(power);
-               LflyWheel.setPower(power);
+                power = Math.max(0, power);
+                RflyWheel.setPower(power);
+                LflyWheel.setPower(power);
 
                voltage = voltageSensor.getVoltage();
 
@@ -172,7 +174,7 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR_AUTO:
-                vel = 1800;//1000
+                vel = 1400;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
