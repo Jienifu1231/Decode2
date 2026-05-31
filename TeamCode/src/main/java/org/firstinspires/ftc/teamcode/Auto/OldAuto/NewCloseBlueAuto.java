@@ -31,7 +31,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
     public static Pose2d IntakePath1 = new Pose2d(-15,-18.6, Math.toRadians(-90));//-10
     public static Pose2d Intake1 = new Pose2d(-15,-54,Math.toRadians(-90));//62.6
     public static Pose2d IntakePath2 = new Pose2d (9.75,-18.6, Math.toRadians(-90));//14.75
-    public static Pose2d Intake2 = new Pose2d(7,-54, Math.toRadians(-90));
+    public static Pose2d Intake2 = new Pose2d(7,-54 , Math.toRadians(-90));
     public static Pose2d IntakePath3 = new Pose2d(32.75,-18.6, Math.toRadians(-90));//35.75
     public static Pose2d Intake3 = new Pose2d(32.75,-68,Math.toRadians(-90));
 
@@ -101,7 +101,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
                     }
                     Gate.close();
                     Intake.exprelease(true);
-                    Turret.pinpointBlue(curpos, TurretTicks);
+                    Turret.pinpointBlue(curpos, TurretTicks,0);
                     if(intakeIndex == 0){
                         shootPathWait = 2.7;//2.8
                     }
@@ -255,7 +255,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
                     break;
 
                 case SHOOT2:
-                    Turret.pinpointBlue(curpos, TurretTicks);
+                    Turret.pinpointBlue(curpos, TurretTicks,0);
                     //updated here
                     output = zero;
                     Outtake.launch_close();

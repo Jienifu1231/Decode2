@@ -31,9 +31,9 @@ public class BlueFarPP extends GorillabotCentral {
     //58.75, math to radians(157)
    // public static Pose2d ShootPath2 = new Pose2d(-11.7,17.5, Math.toRadians(135));
     public static Pose2d IntakePath1 = new Pose2d(67,-67, Math.toRadians(-90));
-    public static Pose2d Intake1 = new Pose2d (67,-63,Math.toRadians(-90));
+    public static Pose2d Intake1 = new Pose2d (67,-67,Math.toRadians(-90));
     public static Pose2d IntakePath2 = new Pose2d(35.75,-18.6, Math.toRadians(180));
-    public static Pose2d Intake2 = new Pose2d (37.75,-65,Math.toRadians(-90));
+    public static Pose2d Intake2 = new Pose2d (37.75,-66,Math.toRadians(-90));
     public static Pose2d IntakePath3 = new Pose2d (39,-65, Math.toRadians(-90));
     //-7,18.6, Math.toRadians(180)
     public static Pose2d Intake3 = new Pose2d (36,65,Math.toRadians(90));
@@ -159,13 +159,13 @@ public class BlueFarPP extends GorillabotCentral {
                     }
                     break;
 
-                    
+
 
                 case INTAKEPATH:
                     output = drive.goToPosition(IntakePath1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
-
-                    if(IntakePathTimer.seconds() > intakePathWait+0.2){
+                    Intake.exprelease(true);
+                    if(IntakePathTimer.seconds() > intakePathWait ){
                         //drive.drivePID.pos_reached == true &&
                         //if got stucked in the state then take out the pos_reached part
                         drive.resetPath();
@@ -173,14 +173,15 @@ public class BlueFarPP extends GorillabotCentral {
                         state = State.INTAKE;
                     }
                     break;
+
                 case INTAKE:
                     output = drive.goToPosition(Intake1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
                     Outtake.launch_far();
-                    if(IntakingTimer.seconds() <= Intaking - 0.7){
+                    Intake.exprelease(true);
+                    if(IntakingTimer.seconds() <= Intaking + 0.5){
                         Intake.exprelease(true);
                     }else{
-                        Intake.stop();
                         shootIndex = 0;
                         intakeIndex = 1;
                         ShootPathTimer.reset();

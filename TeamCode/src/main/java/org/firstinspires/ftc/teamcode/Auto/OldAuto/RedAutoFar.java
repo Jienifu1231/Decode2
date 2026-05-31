@@ -28,6 +28,7 @@ public class RedAutoFar extends GorillabotCentral {
     }
 
     public static Pose2d ShootPath = new Pose2d(57, 16.6, Math.toRadians(160));
+    //57, 16.6, Math.toRadians(160)
     //58.75, math to radians(157)
     public static Pose2d ShootPath2 = new Pose2d(-11.7,17.5, Math.toRadians(135));
     public static Pose2d IntakePath1 = new Pose2d(67,61, Math.toRadians(90));
@@ -99,8 +100,8 @@ public class RedAutoFar extends GorillabotCentral {
 
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.6, 1, 0.6, 0.1);
-                    Outtake.launch_far();
-                    Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
+                    Outtake.launch_far_auto();
+                    //Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
                     Angle.far();
                         Intake.manual(0.4);
                         if(WrapUp == 0){
@@ -124,7 +125,8 @@ public class RedAutoFar extends GorillabotCentral {
                     Intake.manual(1);
                     Gate.open();
                     Outtake.launch_far_auto();
-                    Angle.far();
+                   // Outtake.launch_far_auto();
+                    Angle.manual(0.215);
                     //0.225
                     //Angle.far();
                     if(ShooterTimer.seconds() > shooting) {
@@ -167,7 +169,7 @@ public class RedAutoFar extends GorillabotCentral {
                 case INTAKE:
                     output = drive.goToPosition(Intake1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
-                    Outtake.launch_far();
+                    Outtake.launch_far_auto();
                     if(IntakingTimer.seconds() <= Intaking - 0.7){
                         Intake.exprelease(true);
                     }else{
@@ -194,7 +196,7 @@ public class RedAutoFar extends GorillabotCentral {
                 case INTAKE2:
                     output = drive.goToPosition(Intake2, 0.6,1, 0.6, 0.1);
                     Gate.close();
-                    Outtake.launch_far();
+                    Outtake.launch_far_auto();
                     if(IntakingTimer.seconds() <= Intaking){
                         Intake.exprelease(true);
                     }else{

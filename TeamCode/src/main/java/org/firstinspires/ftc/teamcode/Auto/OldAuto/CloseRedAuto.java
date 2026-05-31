@@ -275,6 +275,8 @@ public class CloseRedAuto extends GorillabotCentral {
             dashboardTelemetry.addData("target vel", -Outtake.vel);
             dashboardTelemetry.addData("cur vel right", Outtake.RflyWheel.getVelocity());
             dashboardTelemetry.addData("cur vel left", Outtake.LflyWheel.getVelocity());
+            dashboardTelemetry.addData("Turret target", Turret.TurretAngle);
+            dashboardTelemetry.addData("Turret current angle", Turret.TurretHeading);
             dashboardTelemetry.update();
 
 

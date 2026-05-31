@@ -65,7 +65,7 @@ public class Outtake {
     public static double far_kV = 0.00033;//0.00033
     //tune kV first and make sure it doesnt collide with max speed
 
-    public static double far_auto_kV = 0.0003;//0.00034
+    public static double far_auto_kV = 0.000348;//0.00034
 
     public static double far_sensitivity = 20;
     public static double far_integral_sum_limit = 10;
@@ -137,7 +137,7 @@ public class Outtake {
 
 
             case LAUNCH_CLOSE:
-                vel = 1350;//change this based on calculation --- 1420
+                vel = 1370;//change this based on calculation --- 1420
                 voltage = voltageSensor.getVoltage();
 
                 curvel = RflyWheel.getVelocity();
@@ -156,7 +156,7 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR:
-                vel = 1800;//1000
+                vel = 1700;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
@@ -174,7 +174,7 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR_AUTO:
-                vel = 1400;//1000
+                vel = 1500;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 

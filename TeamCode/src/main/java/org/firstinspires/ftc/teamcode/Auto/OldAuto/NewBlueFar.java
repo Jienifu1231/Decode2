@@ -101,7 +101,7 @@ public class NewBlueFar extends GorillabotCentral {
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.6, 1, 0.6, 0.1);
                     Outtake.launch_far();
-                    Turret.pinpointBlue(curpos, TurretTicks);
+                    //Turret.pinpointBlue(curpos, TurretTicks);
                     Angle.far();
                     Intake.manual(0.4);
                     if(WrapUp == 0){
@@ -135,7 +135,7 @@ public class NewBlueFar extends GorillabotCentral {
                     if(ShooterTimer.seconds() > shooting) {
                         //Outtake.launch_far();
                         Intake.stop();
-                        Turret.pinpointBlue(curpos, TurretTicks);
+                        //Turret.pinpointBlue(curpos, TurretTicks);
                         IntakePathTimer.reset();
                         if (intakeIndex == 0) {
                             drive.resetPath();
@@ -278,6 +278,7 @@ public class NewBlueFar extends GorillabotCentral {
 
             telemetry.addData("state", state);
             telemetry.addData("current pos", curpos);
+            telemetry.addData("Turret vel", Turret.turret.getVelocity());
             telemetry.addData("Turret State", Turret.target_state);
             telemetry.addData("Intake state", Intake.target_state);
             telemetry.addData("Outtake state", Outtake.target_state);
