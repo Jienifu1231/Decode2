@@ -55,7 +55,7 @@ public class PinpointTurret2 extends GorillabotCentral {
             //tune
 
             if (g2.a.isPressed()) {
-                Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
+                Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition(), 0);
             }else if(g2.b.isPressed()){
                 Turret.manual(output);
             }else if(g2.rightBumper.isPressed()){

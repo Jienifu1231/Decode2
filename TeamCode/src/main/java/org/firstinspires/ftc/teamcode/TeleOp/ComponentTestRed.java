@@ -19,6 +19,8 @@ public class ComponentTestRed extends GorillabotCentral {
     public static double normn_vel = 0.6;
     public static double max = 0.9;
 
+    public double AngleOffset = 0;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -88,10 +90,21 @@ public class ComponentTestRed extends GorillabotCentral {
                 //TurretTicks = Turret.turret.getCurrentPosition();
             }//expe
 
+            if(g2.a.isPressed()){
+                Turret.pinpointBlue(curpos, TurretTicks, AngleOffset);//could be negativ
+            }else if(g2.rightBumper.isPressed()){
+                Turret.manual(-0.5);
+            }else if(g2.leftBumper.isPressed()){
+                Turret.manual(0.5);//tune
+            }else if(g2.dpadLeft.isPressed()){
+                Turret.reset(Turret.turret.getCurrentPosition());
+            }else{
+                Turret.stop();
+            }
 
             //if(g2.a.isPressed(){
             if(g2.a.isPressed()){
-                Turret.pinpointRed(curpos, TurretTicks);
+                Turret.pinpointBlue(curpos, TurretTicks, AngleOffset);
             } else if(g2.rightBumper.isPressed()){
                 Turret.manual(-0.5);
             }else if(g2.leftBumper.isPressed()){

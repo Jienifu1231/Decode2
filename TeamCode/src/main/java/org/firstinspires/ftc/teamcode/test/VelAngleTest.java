@@ -88,7 +88,7 @@ public class VelAngleTest extends GorillabotCentral {
             }
 
             if (g2.a.isPressed()) {
-                Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
+                Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition(), 0);
             }else if(g2.b.isPressed()){
                 Turret.manual(output);
             }else if(g2.rightBumper.isPressed()){

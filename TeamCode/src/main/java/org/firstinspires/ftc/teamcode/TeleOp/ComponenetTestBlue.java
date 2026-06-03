@@ -109,11 +109,6 @@ public class ComponenetTestBlue extends GorillabotCentral {
             }
 
             */
-            if(g2.dpadUp.wasJustPressed()){
-                AngleOffset += 0.01;
-            }else if(g2.dpadDown.wasJustPressed()){
-                AngleOffset -= 0.01;
-            }
 
             if(g2.a.isPressed()){
                 Turret.pinpointBlue(curpos, TurretTicks, AngleOffset);//could be negativ

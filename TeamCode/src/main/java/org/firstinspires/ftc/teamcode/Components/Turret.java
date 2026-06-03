@@ -32,7 +32,7 @@ public class Turret {
 
     public DcMotorEx turret;
 
-    public double AngleOffSet = 0;
+    public double AngleOffSetOut = 0;
     double angleOffSet = 0;
 
    public  PID lime_pid;
@@ -86,9 +86,9 @@ public class Turret {
     public static double max = 0.78;
 
     public static double B_kp = 1.2;//1.1
-    public static double B_ki = 0.16;//0.2
+    public static double B_ki = 0.17;//0.2
     public static double B_kd = 0;
-    public static double B_sensitivity = 0.05;
+    public static double B_sensitivity = 0.01;
     public static double B_integral_sum_limit = 30;
     public static double B_normn_vel = 0.7;
     public static double B_max = 0.9;
@@ -112,13 +112,13 @@ public class Turret {
     public void stop(){target_state = State.STOP;}
     public void limeRed(){target_state = State.LIMERED;}
     public void limeBlue(){target_state = State.LIMEBLUE;}
-    public void pinpointRed(Pose2d PPpos, double PPTurretPos){target_state = State.PINPOINTRED; curpos = PPpos; TurretPos = PPTurretPos;}
+    public void pinpointRed(Pose2d PPpos, double PPTurretPos, double AngleOffSetOutR){target_state = State.PINPOINTRED; curpos = PPpos; TurretPos = PPTurretPos;angleOffSet = AngleOffSetOutR;}
 
-    public void pinpointBlue(Pose2d PPpos, double PPTurretPos, double AngleOffSet){
+    public void pinpointBlue(Pose2d PPpos, double PPTurretPos, double AngleOffSetOut){
         target_state = State.PINPOINTBLUE;
         curpos = PPpos;
         TurretPos = PPTurretPos;
-        AngleOffSet = angleOffSet;
+        angleOffSet = AngleOffSetOut;
     }
 
     public void reset(double CurrentDegree){target_state = State.RESET; TurretPos = CurrentDegree;}
@@ -161,6 +161,7 @@ public class Turret {
                 if(-573 <= TurretPos && TurretPos <= 609) {
                     TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
                     TurretAngle = Math.atan2(72 + curpos.getX(), 72 - curpos.getY()) - curpos.getHeading() + 1.57;
+                    TurretAngle = TurretAngle +angleOffSet;
                     output = pp_pid.update(TurretAngle, TurretHeading);
                 }else{
                     output = 0;
@@ -171,7 +172,8 @@ public class Turret {
             case PINPOINTBLUE:
                 if(-573 <= TurretPos && TurretPos <= 609) {
                     TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
-                    TurretAngle = Math.atan2(-(72 - curpos.getY()), -(curpos.getX() - 72)) - curpos.getHeading() - 1.57 + angleOffSet;
+                    TurretAngle = Math.atan2(-(72 - curpos.getY()), -(curpos.getX() - 72)) - curpos.getHeading() - 1.57;
+                    TurretAngle = TurretAngle + angleOffSet;
                     output = pp_Bpid.update(TurretAngle, TurretHeading);
                 }else{
                     output = 0;

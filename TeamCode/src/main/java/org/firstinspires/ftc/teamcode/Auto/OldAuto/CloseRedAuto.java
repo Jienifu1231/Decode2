@@ -93,7 +93,7 @@ public class CloseRedAuto extends GorillabotCentral {
 
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.6, 1, 0.6, 0.1);//0.4
-                    Turret.pinpointRed(curpos, TurretTicks);
+                    Turret.pinpointRed(curpos, TurretTicks, 0);
                     if(intakeIndex == 0) {
                         Outtake.launch_close();
                     }else{
