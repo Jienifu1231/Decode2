@@ -71,7 +71,7 @@ public class NewCloseBlueAuto extends GorillabotCentral {
         ElapsedTime IntakingTimer = new ElapsedTime();
         double Intaking = 1.5;
 
-        double AngleOffset = 0;
+        double AngleOffset = -0.03;
 
 
         waitForStart();

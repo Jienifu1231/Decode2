@@ -90,27 +90,19 @@ public class ComponentTestRed extends GorillabotCentral {
                 //TurretTicks = Turret.turret.getCurrentPosition();
             }//expe
 
-            if(g2.a.isPressed()){
-                Turret.pinpointBlue(curpos, TurretTicks, AngleOffset);//could be negativ
-            }else if(g2.rightBumper.isPressed()){
-                Turret.manual(-0.5);
-            }else if(g2.leftBumper.isPressed()){
-                Turret.manual(0.5);//tune
-            }else if(g2.dpadLeft.isPressed()){
-                Turret.reset(Turret.turret.getCurrentPosition());
-            }else{
-                Turret.stop();
+            if(g2.dpadLeft.wasJustPressed()){
+                AngleOffset += 0.06;
+            }else if(g2.dpadRight.wasJustPressed()){
+                AngleOffset -= 0.06;
             }
 
             //if(g2.a.isPressed(){
             if(g2.a.isPressed()){
-                Turret.pinpointBlue(curpos, TurretTicks, AngleOffset);
+                Turret.pinpointRed(curpos, TurretTicks, AngleOffset);
             } else if(g2.rightBumper.isPressed()){
                 Turret.manual(-0.5);
             }else if(g2.leftBumper.isPressed()){
                 Turret.manual(0.5);//tune
-            }else if(g2.dpadLeft.isPressed()){
-                Turret.reset(Turret.turret.getCurrentPosition());
             }else{
                 Turret.stop();
             }
@@ -144,6 +136,7 @@ public class ComponentTestRed extends GorillabotCentral {
             telemetry.addData("current pos", curpos);
             telemetry.addData("reloc pos", reloc);
             telemetry.addData("turret ticks", TurretTicks);
+            telemetry.addData("Turret Angle Offset", AngleOffset);
             telemetry.addData("turret power", Turret.turret.getPower());
             telemetry.addData("outtake state", Outtake.target_state);
             telemetry.addData("outtake power right", Outtake.RflyWheel.getPower());

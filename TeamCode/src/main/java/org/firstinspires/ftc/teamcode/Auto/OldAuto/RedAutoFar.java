@@ -27,19 +27,20 @@ public class RedAutoFar extends GorillabotCentral {
         CHECK
     }
 
-    public static Pose2d ShootPath = new Pose2d(57, 16.6, Math.toRadians(160));
+    public static Pose2d ShootPath = new Pose2d(57, 16.6, Math.toRadians(158));
     //57, 16.6, Math.toRadians(160)
     //58.75, math to radians(157)
-    public static Pose2d ShootPath2 = new Pose2d(-11.7,17.5, Math.toRadians(135));
-    public static Pose2d IntakePath1 = new Pose2d(67,61, Math.toRadians(90));
+    public static Pose2d ShootPath2 = new Pose2d(-11.7,17.5, Math.toRadians(127));//129
+    public static Pose2d IntakePath1 = new Pose2d(65,61, Math.toRadians(90));
     public static Pose2d Intake1 = new Pose2d (67,63,Math.toRadians(90));
     public static Pose2d IntakePath2 = new Pose2d(35.75,18.6, Math.toRadians(180));
-    public static Pose2d Intake2 = new Pose2d (37.75,65,Math.toRadians(90));
-    public static Pose2d IntakePath3 = new Pose2d (39,65, Math.toRadians(90));
+    public static Pose2d Intake2 = new Pose2d (37.75,72,Math.toRadians(90));
+    public static Pose2d IntakePath3 = new Pose2d (67,63, Math.toRadians(90));
+    public static Pose2d IntakePath3Slide = new Pose2d(49, 60, Math.toRadians(120));
     //-7,18.6, Math.toRadians(180)
     public static Pose2d Intake3 = new Pose2d (36,65,Math.toRadians(90));
     //-7,62.6,Math.toRadians(90)
-    public static Pose2d Stop = new Pose2d (5, 22, Math.toRadians(90));
+    public static Pose2d Stop = new Pose2d (50, 17, Math.toRadians(90));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -62,7 +63,7 @@ public class RedAutoFar extends GorillabotCentral {
         double init_wait = 0.3;
 
         ElapsedTime ShootPathTimer = new ElapsedTime();
-        double shootPathWait = 1.5;//2
+        double shootPathWait = 1.4;//2
 
         ElapsedTime LimeTimer = new ElapsedTime();
         double LimeWait = 1.3;
@@ -101,11 +102,13 @@ public class RedAutoFar extends GorillabotCentral {
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.6, 1, 0.6, 0.1);
                     Outtake.launch_far_auto();
+                    Turret.stop();
                     //Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
                     Angle.far();
                         Intake.manual(0.4);
                         if(WrapUp == 0){
-                            shootPathWait = shootPathWait + 3;
+                            Outtake.launch_far();
+                            shootPathWait = shootPathWait + 2.5;//3
                             WrapUp = 1;
                         }
                     if( ShootPathTimer.seconds() > shootPathWait){//change stuff here to make sure PID is right -- ki
@@ -122,10 +125,11 @@ public class RedAutoFar extends GorillabotCentral {
                 case SHOOT:
                     //update here
                     output = zero;
-                    Intake.manual(1);
+                    Intake.manual(0.8);
                     Gate.open();
+                    //Outtake.launch_far();
                     Outtake.launch_far_auto();
-                   // Outtake.launch_far_auto();
+                    Turret.stop();
                     Angle.manual(0.215);
                     //0.225
                     //Angle.far();
@@ -149,6 +153,10 @@ public class RedAutoFar extends GorillabotCentral {
                                 state = State.INTAKEPATH3;
 
                         }
+                            if(intakeIndex == 3){
+                                drive.resetPath();
+                                state = State.STOP;
+                            }
 
 
                     }
@@ -194,7 +202,7 @@ public class RedAutoFar extends GorillabotCentral {
                     break;
 
                 case INTAKE2:
-                    output = drive.goToPosition(Intake2, 0.6,1, 0.6, 0.1);
+                    output = drive.goToPosition(Intake2, 0.5,1, 0.6, 0.1);
                     Gate.close();
                     Outtake.launch_far_auto();
                     if(IntakingTimer.seconds() <= Intaking){
@@ -213,36 +221,33 @@ public class RedAutoFar extends GorillabotCentral {
                     output = drive.goToPosition(IntakePath3, 0.6, 1, 0.6, 0.1);
                     Gate.close();
                     Intake.exprelease(true);
-                    if(IntakePathTimer.seconds() > intakePathWait && drive.drivePID.pos_reached == true){
-                        Intake.stop();
+                    intakePathWait = 2.5;
+                    if(IntakePathTimer.seconds() > intakePathWait ){
+                        // && drive.drivePID.pos_reached == true
                         shootIndex = 0;
                         intakeIndex =3;
                         ShootPathTimer.reset();
                         //drive.drivePID.pos_reached == true &&
                         drive.resetPath();
                         IntakingTimer.reset();
-                        state = State.PATH2;
+                        state = State.PATH;
                     }
                     break;
 /*
                 case INTAKE3:
-                    output = drive.goToPosition(Intake3, 0.6, 1, 0.6, 0.1);
+                    output = drive.goToPosition(IntakePath3Slide, 0.6, 1, 0.6, 0.1);
                     Gate.close();
-                    Outtake.launch_far();
-                    Intaking = 1;
-                    if(IntakingTimer.seconds() <= Intaking){
-                        Intake.exprelease(true);
-                    }else{
-                        Intake.stop();
-                        shootIndex = 0;
-                        intakeIndex =3;
-                        ShootPathTimer.reset();
+                    Intake.exprelease(true);
+                    intakePathWait = 1;
+                    if(IntakingTimer.seconds() >= intakePathWait) {
                         drive.resetPath();
-                        state = State.PATH2;
+                        ShootPathTimer.reset();
+                        state = State.PATH;
                     }
                     break;
 
  */
+
 
 
                 case PATH2:
@@ -271,6 +276,10 @@ public class RedAutoFar extends GorillabotCentral {
                         output = zero;
                         state = State.CHECK;
                     }
+                    break;
+
+                case STOP:
+                    output = drive.goToPosition(Stop, 0.6, 1, 0.6, 0.1);
                     break;
 
             }

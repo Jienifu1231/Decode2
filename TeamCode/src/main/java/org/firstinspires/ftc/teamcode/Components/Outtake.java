@@ -156,7 +156,7 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR:
-                vel = 1700;//1000
+                vel = 1760;//1000
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
@@ -174,15 +174,15 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR_AUTO:
-                vel = 1500;//1000
+                vel = 1715;//1710
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 
-                power = far_auto_pid.update(vel, curvel, voltage);
+                error = vel - curvel;
+                power = far_pid.update(vel, curvel, voltage);
+                power = Math.max(0, power);
                 RflyWheel.setPower(power);
                 LflyWheel.setPower(power);
-
-                voltage = voltageSensor.getVoltage();
                 break;
 
             case COMBINED:
