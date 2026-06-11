@@ -168,16 +168,12 @@ public class Turret {
                 }
                 turret.setPower(output);
                 break;
-
             case PINPOINTBLUE:
-                if(-573 <= TurretPos && TurretPos <= 609) {
                     TurretHeading = Math.toRadians(TurretPos / ticksPerDegree);
                     TurretAngle = Math.atan2(-(72 - curpos.getY()), -(curpos.getX() - 72)) - curpos.getHeading() - 1.57;
                     TurretAngle = TurretAngle + angleOffSet;
                     output = pp_Bpid.update(TurretAngle, TurretHeading);
-                }else{
-                    output = 0;
-                }
+
                 turret.setPower(output);
                 break;
 
