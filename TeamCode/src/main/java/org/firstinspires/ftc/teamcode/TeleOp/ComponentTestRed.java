@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.teamcode.Components.Colors;
 import org.firstinspires.ftc.teamcode.GorillabotCentral;
 import org.firstinspires.ftc.teamcode.util.PID;
 import org.firstinspires.ftc.teamcode.util.Pose2d;
@@ -41,11 +43,18 @@ public class ComponentTestRed extends GorillabotCentral {
         initLime(1);
         lime_pid = new PID(kp, ki, kd, sensitivity, integral_sum_limit, normn_vel, max,false);
         double pos = 0;
+
+        DigitalChannel led;
+        led = hardwareMap.get(DigitalChannel.class, "led");
+        led.setMode(DigitalChannel.Mode.OUTPUT);
+
         updateControllers();
 
         while(!isStarted()){
             drive.pinpoint.recalibrateIMU();
         }
+
+
 
         waitForStart();
 
@@ -57,12 +66,23 @@ public class ComponentTestRed extends GorillabotCentral {
 
             drive.setDrivePower(g1.getDrivePower().scale(1));
 
+            Colors.DetectedColor slot1 = colors.getColor1();
+            Colors.DetectedColor slot2 = colors.getColor2();
+            Colors.DetectedColor slot3 = colors.getColor3();
+
+
+
+
             if(g1.a.isPressed()){
                 Intake.reverse();
             }else if(g1.rightTrigger.moved()) {
                 Intake.exprelease(false);
             //}else if(g1.leftTrigger.moved()){
                 //Intake.exprelease(true);
+                if(slot1 == Colors.DetectedColor.BALL && slot2 == Colors.DetectedColor.BALL && slot3 == Colors.DetectedColor.BALL) {
+                    led.setState(false);
+                }
+                else led.setState(true);
             }else{
                 Intake.stop();
             }
@@ -149,6 +169,10 @@ public class ComponentTestRed extends GorillabotCentral {
             telemetry.addData("turret state", Turret.target_state);
             telemetry.addData("angle servo", Angle.outtake_angle.getPosition());
             telemetry.addData("output of far_pid", Outtake.far_pid.out);
+            telemetry.addData("sensor 1", colors.getColor1());
+            telemetry.addData("sensor 2", colors.getColor2());
+            telemetry.addData("sensor 3", colors.getColor3());
+            telemetry.addData("red", colors.color2.red());
             telemetry.update();
 
             dashboardTelemetry.addData("target vel", -Outtake.vel);
