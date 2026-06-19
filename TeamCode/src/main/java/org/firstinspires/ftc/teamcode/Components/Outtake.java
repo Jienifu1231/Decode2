@@ -18,6 +18,7 @@ public class Outtake {
     public enum State {
         WAITING,
         LAUNCH_CLOSE,
+        LAUNCH_CLOSE_AUTO,
         LAUNCH_CLOSE_TEST,
         LAUNCH_FAR,
         LAUNCH_FAR_AUTO,
@@ -109,6 +110,7 @@ public class Outtake {
     public void launch_close() {
         target_state = State.LAUNCH_CLOSE;
     }
+    public void launch_close_auto(){target_state = State.LAUNCH_CLOSE_AUTO;}
 
     public void launch_far(){target_state = State.LAUNCH_FAR;}
     public void launch_far_auto(){target_state = State.LAUNCH_FAR_AUTO;}
@@ -137,7 +139,7 @@ public class Outtake {
 
 
             case LAUNCH_CLOSE:
-                vel = 1370;//change this based on calculation --- 1420
+                vel = 1250;//change this based on calculation --- 1370
                 voltage = voltageSensor.getVoltage();
 
                 curvel = RflyWheel.getVelocity();
@@ -145,6 +147,16 @@ public class Outtake {
                RflyWheel.setPower(power);
                 LflyWheel.setPower(power);
 
+                break;
+
+            case LAUNCH_CLOSE_AUTO:
+                vel = 1370;//change this based on calculation --- 1420
+                voltage = voltageSensor.getVoltage();
+
+                curvel = RflyWheel.getVelocity();
+                power = close_pid.update(vel, curvel, voltage);
+                RflyWheel.setPower(power);
+                LflyWheel.setPower(power);
                 break;
 
             case LAUNCH_CLOSE_TEST://change this based on calculation --- 1420
@@ -174,7 +186,7 @@ public class Outtake {
                 break;
 
             case LAUNCH_FAR_AUTO:
-                vel = 1715;//1710
+                vel = 1705;//1710
                 curvel = RflyWheel.getVelocity();
                 voltage = voltageSensor.getVoltage();
 

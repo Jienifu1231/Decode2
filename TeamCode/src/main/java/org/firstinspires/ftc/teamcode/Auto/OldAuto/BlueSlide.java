@@ -9,13 +9,14 @@ import org.firstinspires.ftc.teamcode.util.Pose2d;
 
 @Autonomous
 @Config
-public class IntakeGateHoldBlue extends GorillabotCentral {
+public class BlueSlide extends GorillabotCentral {
     enum State{
         INIT,
         PATH,
         SHOOT,
         INTAKEPATH2,
         INTAKE2,
+        GATEOPEN,
         BACKUP,
         GATEHOLD,
         GATEINTAKE,
@@ -28,11 +29,12 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
     public static Pose2d IntakePath1 = new Pose2d(-14,-18.6, Math.toRadians(-90));
     public static Pose2d Intake1 = new Pose2d (-14,-54,Math.toRadians(-90));
     public static Pose2d IntakePath2 = new Pose2d(9.75,-18.6, Math.toRadians(-90));
-    public static Pose2d Intake2 = new Pose2d(9.75,-62.6, Math.toRadians(-90));
-    public static Pose2d BackUp =  new Pose2d(9.75,-30, Math.toRadians(-90));
-    public static Pose2d GateHold = new Pose2d (4,-63, Math.toRadians(-90));
+    public static Pose2d Intake2Alt = new Pose2d(9.75,-58, Math.toRadians(-90));
+    public static Pose2d Intake2 = new Pose2d(9.75,-67, Math.toRadians(-90));
+    public static Pose2d BackUp =  new Pose2d(9.75,-17, Math.toRadians(-90));
+    public static Pose2d GateHold = new Pose2d (2,-63, Math.toRadians(-90));
 
-    public static Pose2d GateInake = new Pose2d (10, -60, Math.toRadians(-120));
+    public static Pose2d GateInake = new Pose2d (9, -60, Math.toRadians(-120));
     public static Pose2d Stop =  new Pose2d (3, -18.6, Math.toRadians(-90));
 
     @Override
@@ -68,7 +70,9 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
 
         double TurretTicks = 0;
 
-        double AngleOffset = 0.03;
+        double AngleOffset = -0.06;
+
+        double Backup = 0.2;
 
         waitForStart();
         while(!isStopRequested()){
@@ -93,7 +97,7 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.8, 1, 0.6, 0.1);//0.4
                     Turret.pinpointBlue(curpos, TurretTicks, AngleOffset);
-                    Outtake.launch_close();
+                    Outtake.launch_close_auto();
                     Gate.close();
                     Intake.exprelease(true);
 
@@ -117,16 +121,17 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
 
                     Gate.open();
                     Intake.exprelease(true);
+                    Turret.pinpointBlue(curpos, TurretTicks, AngleOffset);
 
                     if (IntakeIndex == 0) {
                         Outtake.launch_far();//far
                         Angle.close();
                     }else if(IntakeIndex == 1){
-                        Outtake.launch_close();
-                        Angle.manual(0.24);
+                        Outtake.launch_close_auto();
+                        Angle.manual(0.252);//0.247
                     } else{
                         Angle.manual(0.1745);
-                        Outtake.launch_close();
+                        Outtake.launch_close_auto();
                     }
 
                     if (ShooterTimer.seconds() > shooting) {
@@ -170,6 +175,7 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
                     output = drive.goToPosition(IntakePath2, 0.8, 1, 0.6, 0.1);
                     Gate.close();
                     if (IntakePathTimer.seconds() > intakePathWait) {
+                        Outtake.stop();
                         //drive.drivePID.pos_reached == true &&
                         drive.resetPath();
                         IntakingTimer.reset();
@@ -180,27 +186,40 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
                 case INTAKE2:
                     output = drive.goToPosition(Intake2, 0.8, 1, 0.6, 0.1);
                     Gate.close();
-                    if (IntakingTimer.seconds() <= Intaking) {
+                    if (IntakingTimer.seconds() <= Intaking){
                         Intake.exprelease(true);
                         IntakePathTimer.reset();
                     } else {
-                        output = drive.goToPosition(IntakePath2, 0.8, 1, 0.4, 0.1);
+                        output = drive.goToPosition(Intake2Alt, 0.8, 1, 0.4, 0.1);
                         if (IntakePathTimer.seconds() > intakePathWait) {
+                            Outtake.launch_close_auto();
                             Intake.stop();
                             IntakeIndex = 1;
                             AngleOffset = -0.03;
                             AngleOffset = 0;
                             ShootPathTimer.reset();
                             drive.resetPath();
-                            state = State.BACKUP;
+                            state = State.GATEOPEN;
                         }
+                    }
+                    break;
+
+                case GATEOPEN:
+                    output = drive.goToPosition(GateHold, 0.8, 1, 0.6, 0.1);
+                    if(ShootPathTimer.seconds() > 2){
+                        ShootPathTimer.reset();
+                        drive.resetPath();
+                        state = State.BACKUP;
                     }
                     break;
 
                 case BACKUP:
                     output = drive.goToPosition(BackUp, 0.8, 1, 0.6, 0.1);
                     Gate.close();
-                    if (ShootPathTimer.seconds() >= 0.2) {
+                    if(IntakeIndex == 2 || IntakeIndex == 3){
+                        Backup = 0.5;
+                    }
+                    if (ShootPathTimer.seconds() >= Backup) {
                         drive.resetPath();
                         ShootPathTimer.reset();
                         state = State.PATH;
@@ -223,12 +242,14 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
                     Gate.close();
                     Intake.exprelease(true);
                     if(ShootPathTimer.seconds() >= 2){
+                        Intake.stop();
                         if(IntakeIndex == 2){
                             IntakeIndex = 3;
                         }else {
                             IntakeIndex = 2;
                         }
                         AngleOffset = 0;
+
                         drive.resetPath();
                         ShootPathTimer.reset();
                         state = State.BACKUP;
@@ -260,7 +281,7 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
                         Intake.stop();
                         //shootIndex = 0;
                         IntakeIndex = 4;
-                        AngleOffset = 0.06;
+                        AngleOffset = -0.06;
                         ShootPathTimer.reset();
                         drive.resetPath();
                         state = State.PATH;
@@ -283,7 +304,7 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
 
             telemetry.addData("state", state);
             telemetry.addData("current pos", curpos);
-            telemetry.addData("Shootpath timer", ShootPathTimer.seconds());
+            telemetry.addData("Angle pos", Angle.outtake_angle.getPosition());
             telemetry.addData("Intake state", Intake.target_state);
             telemetry.addData("Outtake state", Outtake.target_state);
             telemetry.addData("Outtake ticks", Outtake.RflyWheel.getVelocity());
@@ -313,5 +334,4 @@ public class IntakeGateHoldBlue extends GorillabotCentral {
 
 
 }
-
 

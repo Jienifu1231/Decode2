@@ -31,7 +31,7 @@ public class RedAutoFar extends GorillabotCentral {
     //57, 16.6, Math.toRadians(160)
     //58.75, math to radians(157)
     public static Pose2d ShootPath2 = new Pose2d(-11.7,17.5, Math.toRadians(127));//129
-    public static Pose2d IntakePath1 = new Pose2d(65,61, Math.toRadians(90));
+    public static Pose2d IntakePath1 = new Pose2d(61,61, Math.toRadians(90));
     public static Pose2d Intake1 = new Pose2d (67,63,Math.toRadians(90));
     public static Pose2d IntakePath2 = new Pose2d(35.75,18.6, Math.toRadians(180));
     public static Pose2d Intake2 = new Pose2d (37.75,72,Math.toRadians(90));
@@ -111,7 +111,7 @@ public class RedAutoFar extends GorillabotCentral {
                             shootPathWait = shootPathWait + 2.5;//3
                             WrapUp = 1;
                         }
-                    if( ShootPathTimer.seconds() > shootPathWait){//change stuff here to make sure PID is right -- ki
+                    if( drive.drivePID.pos_reached == true && ShootPathTimer.seconds() > shootPathWait){//change stuff here to make sure PID is right -- ki
                         //drive.drivePID.pos_reached == true &&
                         drive.resetPath();
                         ShooterTimer.reset();
@@ -166,7 +166,7 @@ public class RedAutoFar extends GorillabotCentral {
                     output = drive.goToPosition(IntakePath1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
 
-                    if(drive.drivePID.pos_reached == true && IntakePathTimer.seconds() > intakePathWait){
+                    if( drive.drivePID.pos_reached == true && IntakePathTimer.seconds() > intakePathWait){
                         //drive.drivePID.pos_reached == true &&
                         //if got stucked in the state then take out the pos_reached part
                         drive.resetPath();
@@ -174,13 +174,13 @@ public class RedAutoFar extends GorillabotCentral {
                         state = State.INTAKE;
                     }
                     break;
+
                 case INTAKE:
                     output = drive.goToPosition(Intake1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
                     Outtake.launch_far_auto();
-                    if(IntakingTimer.seconds() <= Intaking - 0.7){
-                        Intake.exprelease(true);
-                    }else{
+                    Intake.exprelease(true);
+                    if(IntakingTimer.seconds() >= Intaking - 0.7){
                         Intake.stop();
                         shootIndex = 0;
                         intakeIndex = 1;

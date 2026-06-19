@@ -16,7 +16,9 @@ public class Angle {
 
     public double manual_pos = 0;
     //THESE
-    public double close_pos = 0.169;//0.167
+    public double close_pos = 0.06;
+    //0.169 - 0.15 - 0.16 - 0.12 - 0.1 - 0.08
+
     public double far_pos = 0.213;//0.24
     //change these two
 

@@ -108,7 +108,7 @@ public class VelAngleTest extends GorillabotCentral {
             updateComponents();
 
             telemetry.addData("cur vel", vel);
-            telemetry.addData("actual Rflywheel vel", Outtake.RflyWheel.getVelocity());
+            telemetry.addData("actual Rflywheel vel", Outtake.LflyWheel.getVelocity());
             telemetry.addData("cur angle", angle_pos);
             telemetry.addData("curret position", curpos);
             telemetry.addData("distance", LinearDis);

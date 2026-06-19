@@ -85,8 +85,8 @@ public class Turret {
     public static double normn_vel = 0.5;
     public static double max = 0.78;
 
-    public static double B_kp = 1.2;//1.1
-    public static double B_ki = 0.17;//0.2
+    public static double B_kp = 1.5;//1.1
+    public static double B_ki = 0.2;//0.2
     public static double B_kd = 0;
     public static double B_sensitivity = 0.01;
     public static double B_integral_sum_limit = 30;

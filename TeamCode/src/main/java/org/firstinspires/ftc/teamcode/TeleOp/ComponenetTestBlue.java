@@ -87,8 +87,7 @@ public class ComponenetTestBlue extends GorillabotCentral {
             }else if(g1.rightBumper.wasJustPressed()){
                 Outtake.launch_far();
                 Angle.far();
-
-            }else if(g2.x.wasJustPressed()){
+            } else if(g2.x.wasJustPressed()){
                 Outtake.stop();
             }
 
@@ -111,9 +110,9 @@ public class ComponenetTestBlue extends GorillabotCentral {
             */
 
             if(g2.dpadLeft.wasJustPressed()){
-                AngleOffset += 0.02;
+                AngleOffset += 0.06;
             }else if(g2.dpadRight.wasJustPressed()){
-                AngleOffset -= 0.02;
+                AngleOffset -= 0.06;
             }
 
 
@@ -130,7 +129,7 @@ public class ComponenetTestBlue extends GorillabotCentral {
 
 
             if(g1.leftTrigger.moved()){
-                Intake.manual(1);//0.675
+                Intake.manual(0.8);//0.675
                 Gate.open();
             }else{
                 Gate.close();

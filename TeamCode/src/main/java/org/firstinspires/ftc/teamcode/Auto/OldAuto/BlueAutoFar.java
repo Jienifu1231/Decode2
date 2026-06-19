@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.Pose2d;
 
 @Autonomous
 @Config
-public class BlueFarPP extends GorillabotCentral {
+public class BlueAutoFar extends GorillabotCentral {
 
     enum State{
         INIT,
@@ -27,25 +27,27 @@ public class BlueFarPP extends GorillabotCentral {
         CHECK
     }
 
-    public static Pose2d ShootPath = new Pose2d(53.75, -12.4, Math.toRadians(-154));
+    public static Pose2d ShootPath = new Pose2d(57, -16.6, Math.toRadians(-158));
+    //57, 16.6, Math.toRadians(160)
     //58.75, math to radians(157)
-   // public static Pose2d ShootPath2 = new Pose2d(-11.7,17.5, Math.toRadians(135));
-    public static Pose2d IntakePath1 = new Pose2d(67,-67, Math.toRadians(-90));
-    public static Pose2d Intake1 = new Pose2d (67,-67,Math.toRadians(-90));
-    public static Pose2d IntakePath2 = new Pose2d(35.75,-18.6, Math.toRadians(180));
-    public static Pose2d Intake2 = new Pose2d (37.75,-66,Math.toRadians(-90));
-    public static Pose2d IntakePath3 = new Pose2d (39,-65, Math.toRadians(-90));
+    public static Pose2d ShootPath2 = new Pose2d(-11.7,-17.5, Math.toRadians(-127));//129
+    public static Pose2d IntakePath1 = new Pose2d(65,-61, Math.toRadians(-90));
+    public static Pose2d Intake1 = new Pose2d (67,-63,Math.toRadians(-90));
+    public static Pose2d IntakePath2 = new Pose2d(35.75,-18.6, Math.toRadians(-180));
+    public static Pose2d Intake2 = new Pose2d (37.75,-72,Math.toRadians(-90));
+    public static Pose2d IntakePath3 = new Pose2d (67,-63, Math.toRadians(-90));
+    public static Pose2d IntakePath3Slide = new Pose2d(49, -60, Math.toRadians(-120));
     //-7,18.6, Math.toRadians(180)
-    public static Pose2d Intake3 = new Pose2d (36,65,Math.toRadians(90));
+    public static Pose2d Intake3 = new Pose2d (36,-65,Math.toRadians(-90));
     //-7,62.6,Math.toRadians(90)
-    public static Pose2d Stop = new Pose2d (5, 22, Math.toRadians(90));
+    public static Pose2d Stop = new Pose2d (50, -17, Math.toRadians(-90));
 
     @Override
     public void runOpMode() throws InterruptedException {
         State state = State.INIT;
         initializeComponents();
 
-        Pose2d init_pos = new Pose2d(64.4,-18.75,Math.toRadians(180)); // change this
+        Pose2d init_pos = new Pose2d(64.75,-18.6,Math.toRadians(-180)); // change this
         drive.pinpoint.setPosition(Pose2d.dtoD(init_pos));
         //drive.pinpoint.recalibrateIMU();
 
@@ -61,7 +63,7 @@ public class BlueFarPP extends GorillabotCentral {
         double init_wait = 0.3;
 
         ElapsedTime ShootPathTimer = new ElapsedTime();
-        double shootPathWait = 1.5;//2
+        double shootPathWait = 1.4;//2
 
         ElapsedTime LimeTimer = new ElapsedTime();
         double LimeWait = 1.3;
@@ -78,15 +80,11 @@ public class BlueFarPP extends GorillabotCentral {
         ElapsedTime IntakingTimer = new ElapsedTime();
         double Intaking = 1.5;
 
-        double TurretTicks = 0;
-
         waitForStart();
         while (!isStopRequested()) {
             drive.pinpoint.update();
             curpos = Pose2d.Dtod(drive.pinpoint.getPosition());
             drive.pose = curpos;
-
-            TurretTicks = Turret.turret.getCurrentPosition();
 
             switch(state){
                 case INIT:
@@ -103,13 +101,14 @@ public class BlueFarPP extends GorillabotCentral {
 
                 case PATH:
                     output = drive.goToPosition(ShootPath, 0.6, 1, 0.6, 0.1);
-                    Outtake.launch_far();
-                    //Turret.pinpointBlue(curpos, Turret.turret.getCurrentPosition());
-                    Turret.reset(Turret.turret.getCurrentPosition());
+                    Outtake.launch_far_auto();
+                    Turret.stop();
+                    //Turret.pinpointRed(curpos, Turret.turret.getCurrentPosition());
                     Angle.far();
                     Intake.manual(0.4);
                     if(WrapUp == 0){
-                        shootPathWait = shootPathWait + 3;
+                        Outtake.launch_far();
+                        shootPathWait = shootPathWait + 2.5;//3
                         WrapUp = 1;
                     }
                     if( ShootPathTimer.seconds() > shootPathWait){//change stuff here to make sure PID is right -- ki
@@ -126,12 +125,13 @@ public class BlueFarPP extends GorillabotCentral {
                 case SHOOT:
                     //update here
                     output = zero;
-                    Intake.manual(1);
+                    Intake.manual(0.8);
                     Gate.open();
-                    Outtake.launch_far();
-                    Angle.far();
-                    //Turret.pinpointBlue(curpos, TurretTicks);
-                    Turret.reset(Turret.turret.getCurrentPosition());
+                    //Outtake.launch_far();
+                    Outtake.launch_far_auto();
+                    Turret.stop();
+                    //Angle.manual(0.215);
+                    Angle.manual(0.22);
                     //0.225
                     //Angle.far();
                     if(ShooterTimer.seconds() > shooting) {
@@ -154,18 +154,20 @@ public class BlueFarPP extends GorillabotCentral {
                             state = State.INTAKEPATH3;
 
                         }
+                        if(intakeIndex == 3){
+                            drive.resetPath();
+                            state = State.STOP;
+                        }
 
 
                     }
                     break;
 
-
-
                 case INTAKEPATH:
                     output = drive.goToPosition(IntakePath1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
-                    Intake.exprelease(true);
-                    if(IntakePathTimer.seconds() > intakePathWait ){
+
+                    if(drive.drivePID.pos_reached == true && IntakePathTimer.seconds() > intakePathWait){
                         //drive.drivePID.pos_reached == true &&
                         //if got stucked in the state then take out the pos_reached part
                         drive.resetPath();
@@ -173,15 +175,14 @@ public class BlueFarPP extends GorillabotCentral {
                         state = State.INTAKE;
                     }
                     break;
-
                 case INTAKE:
                     output = drive.goToPosition(Intake1, 0.6, 1, 0.6, 0.1);
                     Gate.close();
-                    Outtake.launch_far();
-                    Intake.exprelease(true);
-                    if(IntakingTimer.seconds() <= Intaking + 0.5){
+                    Outtake.launch_far_auto();
+                    if(IntakingTimer.seconds() <= Intaking - 0.7){
                         Intake.exprelease(true);
                     }else{
+                        Intake.stop();
                         shootIndex = 0;
                         intakeIndex = 1;
                         ShootPathTimer.reset();
@@ -202,9 +203,9 @@ public class BlueFarPP extends GorillabotCentral {
                     break;
 
                 case INTAKE2:
-                    output = drive.goToPosition(Intake2, 0.6,1, 0.6, 0.1);
+                    output = drive.goToPosition(Intake2, 0.5,1, 0.6, 0.1);
                     Gate.close();
-                    Outtake.launch_far();
+                    Outtake.launch_far_auto();
                     if(IntakingTimer.seconds() <= Intaking){
                         Intake.exprelease(true);
                     }else{
@@ -221,36 +222,33 @@ public class BlueFarPP extends GorillabotCentral {
                     output = drive.goToPosition(IntakePath3, 0.6, 1, 0.6, 0.1);
                     Gate.close();
                     Intake.exprelease(true);
-                    if(IntakePathTimer.seconds() > intakePathWait && drive.drivePID.pos_reached == true){
-                        Intake.stop();
+                    intakePathWait = 2.5;
+                    if(IntakePathTimer.seconds() > intakePathWait ){
+                        // && drive.drivePID.pos_reached == true
                         shootIndex = 0;
                         intakeIndex =3;
                         ShootPathTimer.reset();
                         //drive.drivePID.pos_reached == true &&
                         drive.resetPath();
                         IntakingTimer.reset();
-                        state = State.PATH2;
+                        state = State.PATH;
                     }
                     break;
 /*
                 case INTAKE3:
-                    output = drive.goToPosition(Intake3, 0.6, 1, 0.6, 0.1);
+                    output = drive.goToPosition(IntakePath3Slide, 0.6, 1, 0.6, 0.1);
                     Gate.close();
-                    Outtake.launch_far();
-                    Intaking = 1;
-                    if(IntakingTimer.seconds() <= Intaking){
-                        Intake.exprelease(true);
-                    }else{
-                        Intake.stop();
-                        shootIndex = 0;
-                        intakeIndex =3;
-                        ShootPathTimer.reset();
+                    Intake.exprelease(true);
+                    intakePathWait = 1;
+                    if(IntakingTimer.seconds() >= intakePathWait) {
                         drive.resetPath();
-                        state = State.PATH2;
+                        ShootPathTimer.reset();
+                        state = State.PATH;
                     }
                     break;
 
  */
+
 
 
                 case PATH2:
@@ -277,12 +275,13 @@ public class BlueFarPP extends GorillabotCentral {
                     }else{
                         Outtake.launch_close();
                         output = zero;
-                        state = State.STOP;
+                        state = State.CHECK;
                     }
                     break;
+
                 case STOP:
                     output = drive.goToPosition(Stop, 0.6, 1, 0.6, 0.1);
-                    Turret.reset(Turret.turret.getCurrentPosition());
+                    break;
 
             }
 

@@ -70,13 +70,12 @@ public class ComponentTestRed extends GorillabotCentral {
 
            if(g1.leftBumper.wasJustPressed()){
                 Outtake.launch_close();
-                   Angle.close();
+                Angle.close();
 
-            }else if(g1.rightBumper.wasJustPressed()){
+           }else if(g1.rightBumper.wasJustPressed()){
                 Outtake.launch_far();
-                    Angle.far();
-
-            }else if(g2.x.wasJustPressed()){
+                Angle.far();
+           } else if(g2.x.wasJustPressed()){
                Outtake.stop();
            }
 
