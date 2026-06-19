@@ -36,10 +36,10 @@ public class Colors {
         //float saturation = color_values[1];
 
 
-        if((0 < red && red < 40) || (0 < blue && blue < 48) || (0 < green && green < 70)){
+        if((0 < red && red < 40) || (0 < blue && blue < 52) || (0 < green && green < 40)){
             return DetectedColor.EMPTY;
         }
-
+//red < 60
         else return DetectedColor.BALL;
 
     }
@@ -63,3 +63,5 @@ public class Colors {
 //double normRed = red / total;
 //double normGreen = green / total;
 //double normBlue = blue / total; --- may be a more robust system
+
+

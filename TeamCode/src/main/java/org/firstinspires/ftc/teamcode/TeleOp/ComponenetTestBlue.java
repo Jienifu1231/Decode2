@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Components.Colors;
 import org.firstinspires.ftc.teamcode.GorillabotCentral;
 import org.firstinspires.ftc.teamcode.util.PID;
 import org.firstinspires.ftc.teamcode.util.Pose2d;
@@ -52,6 +54,11 @@ public class ComponenetTestBlue extends GorillabotCentral {
 
         double TurretTicks =0;
 
+
+        DigitalChannel led;
+        led = hardwareMap.get(DigitalChannel.class, "led");
+        led.setMode(DigitalChannel.Mode.OUTPUT);
+
         updateControllers();
         
 
@@ -68,6 +75,16 @@ public class ComponenetTestBlue extends GorillabotCentral {
             TurretTicks = Turret.turret.getCurrentPosition();
 
             drive.setDrivePower(g1.getDrivePower().scale(1));
+
+            Colors.DetectedColor slot1 = colors.getColor1();
+            Colors.DetectedColor slot2 = colors.getColor2();
+            Colors.DetectedColor slot3 = colors.getColor3();
+
+            if(slot1 == Colors.DetectedColor.BALL && slot2 == Colors.DetectedColor.BALL && slot3 == Colors.DetectedColor.BALL) {
+                led.setState(false);
+            }
+            else led.setState(true);
+
 
             if(g1.a.isPressed()){
                 Intake.reverse();
