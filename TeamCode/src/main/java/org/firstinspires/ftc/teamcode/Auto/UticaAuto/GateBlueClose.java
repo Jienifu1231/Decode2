@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.UticaAuto;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 

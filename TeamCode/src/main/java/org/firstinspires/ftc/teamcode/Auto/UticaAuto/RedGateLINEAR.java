@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.UticaAuto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.Pose2d;
 
 @Autonomous
 @Config
-public class BlueGateLINEAR extends GorillabotCentral {
+public class RedGateLINEAR extends GorillabotCentral {
     enum State{
         INIT,
         PATH,
@@ -32,19 +32,17 @@ public class BlueGateLINEAR extends GorillabotCentral {
         INTAKE1,
         STOP
 
-
     }
-    public Pose2d ShootPath = new Pose2d (-13.7,-17.5, Math.toRadians(-90));
-    public Pose2d Row2 = new Pose2d (9.75,-18.6, Math.toRadians(-90));
-    public Pose2d Intake2 = new Pose2d(9.75,-62.6, Math.toRadians(-90));
-    public Pose2d BackUp = new Pose2d (9.75,-18.6, Math.toRadians(-90));
-    public Pose2d PreGate = new Pose2d(6, -18.6, Math.toRadians(-90));
-    public Pose2d GateOpen = new Pose2d(6,-57, Math.toRadians(-90));//change this
-    public Pose2d GateIntake = new Pose2d(9 ,-58.5, Math.toRadians(-128));
-    public Pose2d Row1 = new Pose2d(-14,-18.6, Math.toRadians(-90));
-    public Pose2d Intake1 = new Pose2d(-14,-55.6,Math.toRadians(-90));
-    public Pose2d Stop = new Pose2d (10, -17.5, Math.toRadians(90));
-
+     public Pose2d ShootPath = new Pose2d (-13.7,17.5, Math.toRadians(90));
+    public Pose2d Row2 = new Pose2d(7,18.6, Math.toRadians(90));
+    public Pose2d Intake2 = new Pose2d(7,59, Math.toRadians(90));
+    public Pose2d BackUp = new Pose2d (7,18.6, Math.toRadians(90));
+    public Pose2d PreGate = new Pose2d(6, 18.6, Math.toRadians(90));
+    public Pose2d GateOpen = new Pose2d(6,57, Math.toRadians(90));//change this
+    public Pose2d GateIntake = new Pose2d(9 ,58.5, Math.toRadians(128));
+    public Pose2d Row1 = new Pose2d(-14,18.6, Math.toRadians(90));
+    public Pose2d Intake1 = new Pose2d(-14,54,Math.toRadians(90));
+    public Pose2d Stop = new Pose2d (10, 17.5, Math.toRadians(90));
 
 
     @Override
@@ -52,7 +50,7 @@ public class BlueGateLINEAR extends GorillabotCentral {
         State state = State.INIT;
         initializeComponents();
 
-        Pose2d init_pos = new Pose2d(-65,-41.375,Math.toRadians(0));
+        Pose2d init_pos = new Pose2d(-65,41.375,Math.toRadians(0));
         drive.pinpoint.setPosition(Pose2d.dtoD(init_pos));
 
         Pose2d output = zero;
@@ -170,9 +168,9 @@ public class BlueGateLINEAR extends GorillabotCentral {
                     Gate.close();
                     if(drive.drivePID.pos_reached == true && IntakePathTimer.seconds() > IntakePathWait ){
                         drive.resetPath();
-                        IntakeTimer.reset();
-                        state = State.INTAKE2;
-                    }
+                            IntakeTimer.reset();
+                            state = State.INTAKE2;
+                        }
 
                     break;
 
